@@ -11,6 +11,10 @@ export const signup = async (req, res)=>{
         if(existinguser)
           return res.status(400).json({message: "User already exists"});
 
+        if (password.length < 6){
+            return res.status(400).json({message: "Password should be atleast 6 characters long"});
+        }
+
     const hashedpwd = await bcrypt.hash(password, 12);
     const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + 20 * 60 * 1000);
@@ -22,8 +26,8 @@ export const signup = async (req, res)=>{
         otp,
         otpExpiry,
     });
-
     await newUser.save();
+    const token = generateToken(newUser._id, res);
     await sendMail(email, "Account Verification", otp);
 
     return res.status(200).json({message: "User created successfully. Please verify your email"});
