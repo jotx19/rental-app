@@ -13,6 +13,7 @@ export const signup = async (req, res)=>{
 
     const hashedpwd = await bcrypt.hash(password, 12);
     const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 20 * 60 * 1000);
 
     const newUser = new User({
         name,
@@ -28,6 +29,7 @@ export const signup = async (req, res)=>{
     return res.status(200).json({message: "User created successfully. Please verify your email"});
 
     } catch (error) {
+        console.log('Error in signup', error);
         return res.status(500).json({message: "Internal server error", error});
     }
 }
@@ -63,7 +65,7 @@ export const resendOtp = async (req, res)=>{
         if(!user)
           return res.status(400).json({message: "User not found"});
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        const otpExpiry = new Date(Date.now() + 20 * 60 * 1000);
 
         user.otp = otp;
         user.otpExpiry = otpExpiry;
