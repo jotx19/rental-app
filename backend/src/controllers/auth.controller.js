@@ -119,3 +119,12 @@ export const logout = (req, res)=>{
     res.clearCookie("myToken");
     res.json({message: "Logged out successfully"});
 };
+
+export const checkAuth = (req, res) =>{
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        console.log("Error in Authentication Check", error)
+        res.status(500).json({message: "Internal Server Error"});
+    }
+};
