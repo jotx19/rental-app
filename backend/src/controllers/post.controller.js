@@ -2,7 +2,7 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 export const createPost = async (req, res) => {
-    const { price, description, type, latitude, longitude } = req.body;
+    const { price, description, type, latitude, longitude, utilities } = req.body;
     
     if(!price || !type || !latitude || !longitude){
         return res.status(400).json({message: "Please enter all fields"});
@@ -14,6 +14,7 @@ export const createPost = async (req, res) => {
             price,
             description,
             type,
+            utilities,
             location: {
                 type: "Point",
                 coordinates: [longitude, latitude],
@@ -59,13 +60,12 @@ export const deletePost = async (req, res) => {
       await post.deleteOne();
       return res.status(200).json({ message: "Post deleted successfully" });
     } catch (error) {
-      console.log("Error deleting post: ", error);
       return res.status(500).json({ message: "Error deleting post", error });
     }
   }; 
 
 export const editPost = async (req, res) => {
-    const { price, description, type, latitude, longitude } = req.body;
+    const { price, description, type, latitude, longitude, utilities } = req.body;
   
     if (!price || !description || !type || !latitude || !longitude) {
       return res.status(400).json({ message: "All fields are required" });
@@ -84,6 +84,7 @@ export const editPost = async (req, res) => {
       post.price = price;
       post.description = description;
       post.type = type;
+      post.utilities = utilities;
       post.location = {
         type: "Point",
         coordinates: [longitude, latitude],

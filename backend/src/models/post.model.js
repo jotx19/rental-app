@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
   {
@@ -16,8 +16,13 @@ const postSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["rent", "sale"],
+      enum: ["Rent", "sale"],
       required: true,
+    },
+    utilities: {
+      type: [String],
+      enum: ["Furnished", "Unfurnished", "Parking Available", "Pet Friendly", "WiFi Included", "Heating Included", "Water Included"],
+      default: [],
     },
     location: {
       type: {
