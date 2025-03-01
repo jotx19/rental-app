@@ -6,12 +6,14 @@ import PostInfo from "./Pages/PostInfoPage"
 import EditPostPage from "./Pages/EditPostPage"
 import LoginPage from "./Pages/LoginPage"
 import SignUpPage from "./Pages/SignUpPage"
-import SettingPage from "./Pages/SettingPage"
 import { FC, useEffect } from "react"
 import Navbar from "./components/Navbar";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
+import EmailVerifyPage from "./Pages/EmailVerifyPage";
+
 
 const App: FC = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
@@ -41,10 +43,39 @@ const App: FC = () => {
         <Route path="/edit-post" element={authUser ? <EditPostPage /> : <Navigate to='/login'/>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/setting" element={authUser ? <SettingPage /> : <Navigate to='/login'/>} />
+        <Route path="/email-verification" element={<EmailVerifyPage/>} />
       </Routes>
       </div>
       </Router>
+      <Toaster position="top-center"
+              toastOptions={{
+                style: {
+                  backgroundColor: '#09090B', 
+                  color: '#fff', 
+                  padding: '5px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  border: '1px solid #27272A',  
+                },
+                success: {
+                  style: {
+                    backgroundColor: '#001F10',
+                    color: '#5AF2A6', 
+                  },
+                },
+                error: {
+                  style: {
+                    backgroundColor: '#2D0608',
+                    color: '#FE9EA1', 
+                  },
+                },
+                loading: {
+                  style: {
+                    backgroundColor: '#f0ad4e', 
+                    color: '#fff', 
+                  },
+                },
+              }}/>
     </ThemeProvider>
   )
 }
