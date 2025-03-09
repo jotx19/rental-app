@@ -21,7 +21,7 @@ export const signup = async (req, res) => {
             name,
             email,
             password: hashedPwd,
-            verified: true, // Mark user as verified on signup
+            verified: true,
         });
 
         await newUser.save();
@@ -120,7 +120,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
 
         const token = generateToken(user._id, res);
-        res.json({ message: "Login successful", token });
+        res.json({ message: "Login successful" });
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });

@@ -25,6 +25,7 @@ interface AuthState {
     verify: (email: string, otp: string) => Promise<void>;
     login: (credentials: { email: string; password: string }) => Promise<void>;
     sendEmailVerification: (email: string) => Promise<void>; 
+    logout: () => void;
 }
 
 interface SignupData {
@@ -112,6 +113,21 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await axiosInstance.post("/auth/email-verification", { email });
       toast.success(res.data.message);
       set({ emailVerificationSent: true });
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response) {
+        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        toast.error(errorMessage);
+      } else {
+        toast.error("Network error. Please try again.");
+      }
+    }
+  },
+
+  logout: async()=>{
+    try {
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null });
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {

@@ -16,12 +16,20 @@ const postSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["Rent", "sale"],
+      enum: ["Rent", "Sale"],
       required: true,
     },
     utilities: {
       type: [String],
-      enum: ["Furnished", "Unfurnished", "Parking Available", "Pet Friendly", "WiFi Included", "Heating Included", "Water Included"],
+      enum: [
+        "Furnished",
+        "Unfurnished",
+        "Parking Available",
+        "Pet Friendly",
+        "WiFi Included",
+        "Heating Included",
+        "Water Included",
+      ],
       default: [],
     },
     location: {
@@ -31,9 +39,13 @@ const postSchema = new mongoose.Schema(
         default: "Point",
       },
       coordinates: {
-        type: [Number], // [longitude, latitude]
+        type: [Number],
         required: true,
       },
+    },
+    image: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }
