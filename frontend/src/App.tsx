@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import { Navigate } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/sonner";
 import EmailVerifyPage from "./Pages/EmailVerifyPage";
 import NewPostPage from "./Pages/NewPostPage";
 
@@ -57,20 +57,20 @@ const App: FC = () => {
         <AppContent />
       </Router>
       <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            backgroundColor: "#09090B",
-            color: "#fff",
-            padding: "5px",
-            borderRadius: "8px",
-            fontSize: "16px",
-            border: "1px solid #27272A",
-          },
-          success: { style: { backgroundColor: "#001F10", color: "#5AF2A6" } },
-          error: { style: { backgroundColor: "#2D0608", color: "#FE9EA1" } },
-          loading: { style: { backgroundColor: "#f0ad4e", color: "#fff" } },
-        }}
+        // position="top-center"
+        // toastOptions={{
+        //   style: {
+        //     backgroundColor: "#09090B",
+        //     color: "#fff",
+        //     padding: "5px",
+        //     borderRadius: "8px",
+        //     fontSize: "16px",
+        //     border: "1px solid #27272A",
+        //   },
+        //   success: { style: { backgroundColor: "#001F10", color: "#5AF2A6" } },
+        //   error: { style: { backgroundColor: "#2D0608", color: "#FE9EA1" } },
+        //   loading: { style: { backgroundColor: "#f0ad4e", color: "#fff" } },
+        // }}
       />
     </ThemeProvider>
   );

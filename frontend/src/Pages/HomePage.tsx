@@ -1,34 +1,99 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; // Import the card component from Shadcn
-import { Button } from '@/components/ui/button'; // Import button from Shadcn
+
+import FetchPage from '@/components/FetchPost';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { usePostStore } from '@/store/usePostStore'; 
+import { LocateFixedIcon, XIcon } from 'lucide-react'; 
+import { useEffect, useState } from 'react';
 
 const HomePage = () => {
+  const { searchLocation, searchResults, setLocation, locationQuery } = usePostStore();
+  const [query, setQuery] = useState(locationQuery);
+  const [showResults, setShowResults] = useState(false);
+
+  useEffect(() => {
+    setQuery(locationQuery);
+  }, [locationQuery]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    if (value.length >= 3) {
+      searchLocation(value);
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+    }
+  };
+
+  const handleSelectLocation = (lat: number, lon: number, name: string) => {
+    setLocation(lat, lon, name);
+    setQuery(name);
+    setShowResults(false);
+  };
+
   return (
-    <div className="min-h-screen md:m-5 mt-20 flex">
-      <div className="w-full p-20 items-center justify-center lg:block hidden lg:w-1/2 flex flex-col">
-      <div className='items-center justify-center flex flex-col'>
-        <h1 className='text-7xl'>
-          Housing Solution for Cities 🍁
-        </h1>
+    <div className="min-h-screen p-4 relative flex flex-col">
+      <video
+        src="hero.mp4"
+        autoPlay
+        loop
+        muted
+        className="object-cover w-full md:h-[30vh] h-[20vh] mt-20 rounded-xl"
+      />
+
+      <div className='flex flex-row justify-between p-4 text-white'>
+        <div className='gap-2'>
+        <Button className='bg-primary'>Get Started</Button>
+        <Button className='bg-primary'>Get Started</Button>
+        </div>
+        <div className=''>
+          <Button className='bg-primary'>Get Started</Button>
+        </div>
       </div>
+      <div className='border-dashed border-[1px] min-h-screen rounded-xl'>
+        <FetchPage />
       </div>
 
-      <div className="w-full lg:w-1/2 relative flex items-center justify-center">
-        <video
-          src="hero.mp4"
-          autoPlay
-          loop
-          muted
-          className="md:w-10/12 w-11/12 md:h-[calc(100vh-15vh)] h-[calc(100vh-70vh)] object-cover rounded-3xl"
-        />
-        <div className="absolute p-4 bg-white/95 bg-opacity-70 text-black rounded-3xl shadow-md w-full max-w-xs mx-4 sm:mx-8 md:mx-16">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Card Above Video</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>This card is placed above the video on the right side</p>
-            <Button className="mt-4">Click Me</Button>
-          </CardContent>
+      {/* New div added below the video to take up the remaining 100vh */}
+
+      <div className="absolute text-white md:w-11/12 lg:w-full w-11/12 justify-center items-center flex md:mt-40 mt-32">
+        <div className="relative flex items-center backdrop-blur-lg bg-base-100/80 rounded-full p-3 w-3/4 sm:w-1/2 lg:w-1/3">
+          <LocateFixedIcon size={25} className="" />
+          <Input
+            className="border-none w-full shadow-none focus:outline-none active:ring-0 focus:ring-0"
+            placeholder="Enter your location"
+            value={query}
+            onChange={handleInputChange}
+          />
+          {query.length > 0 && (
+            <button
+              className="absolute right-3 text-gray-500 hover:text-black"
+              onClick={() => {
+                setQuery('');
+                setShowResults(false);
+              }}
+            >
+              <XIcon className="w-5 h-5 bg-white rounded-full" />
+            </button>
+          )}
         </div>
+
+        {showResults && searchResults.length > 0 && (
+          <ul className="absolute mt-45 p-4 w-3/4 sm:w-1/2 lg:w-1/3 backdrop-blur-lg bg-base-100/80 rounded-3xl shadow-md z-50 h-30 overflow-auto">
+            {searchResults.map((result: any, index: number) => (
+              <li
+                key={index}
+                className="p-2 cursor-pointer hover:bg-white hover:text-black rounded-xl border-none"
+                onClick={() =>
+                  handleSelectLocation(result.geometry.lat, result.geometry.lng, result.formatted)
+                }
+              >
+                {result.formatted}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

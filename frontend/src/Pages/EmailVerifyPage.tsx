@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '../store/useAuthStore';
 import { Loader, Mail } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp';
-import toast from 'react-hot-toast';
+import {toast} from "sonner";
 
 const EmailVerifyPage = () => {
     const [email, setEmail] = useState<string>('');

@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/lib/axios';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { create } from 'zustand';
 import { AxiosError } from 'axios';
 import axios from 'axios';
@@ -21,7 +21,7 @@ interface PostState {
     searchResults: any[];
     createPost: (data: PostData) => Promise<any>;
     getCurrentLocation: () => void;
-    getNearbyPosts: (radius: number) => void;
+    getNearbyPosts: () => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
 }
@@ -93,19 +93,19 @@ export const usePostStore = create<PostState>((set, get) => ({
         }
     },
 
-    getNearbyPosts: async (radius: number = 10) => {
+    getNearbyPosts: async () => {
         const currentLocation = get().currentLocation;
 
         if (!currentLocation) {
             toast.error("Location not available.");
-            return;
+            return [];
         }
 
         const { latitude, longitude } = currentLocation;
 
         try {
-            const res = await axiosInstance.get("/post/nearby-posts", {
-                params: { latitude, longitude, radius },
+            const res = await axiosInstance.get("/post/", {
+                params: { latitude, longitude },
             });
 
             if (res.data.posts) {
@@ -136,6 +136,7 @@ export const usePostStore = create<PostState>((set, get) => ({
             });
 
             set({ searchResults: res.data.results });
+            console.log((res.data.results));
         } catch (error) {
             console.error('Error fetching search results', error);
             toast.error("Error fetching search results");
@@ -148,5 +149,6 @@ export const usePostStore = create<PostState>((set, get) => ({
             locationQuery: name,
             searchResults: [],
         });
+        get().getNearbyPosts();
     },
 }));
