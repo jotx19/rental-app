@@ -1,13 +1,13 @@
-
-import FetchPage from '@/components/FetchPost';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { usePostStore } from '@/store/usePostStore'; 
-import { LocateFixedIcon, XIcon } from 'lucide-react'; 
-import { useEffect, useState } from 'react';
+import FetchPage from "@/components/FetchPost";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { usePostStore } from "@/store/usePostStore";
+import { LocateFixedIcon, XIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const HomePage = () => {
-  const { searchLocation, searchResults, setLocation, locationQuery } = usePostStore();
+  const { searchLocation, searchResults, setLocation, locationQuery } =
+    usePostStore();
   const [query, setQuery] = useState(locationQuery);
   const [showResults, setShowResults] = useState(false);
 
@@ -33,32 +33,40 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 relative flex flex-col">
+    <div className="relative p-2 flex flex-col">
       <video
         src="hero.mp4"
         autoPlay
         loop
         muted
-        className="object-cover w-full md:h-[30vh] h-[20vh] mt-20 rounded-xl"
+        className="object-cover w-full md:h-[30vh] h-[20vh] mt-20 "
       />
 
-      <div className='flex flex-row justify-between p-4 text-white'>
-        <div className='gap-2'>
-        <Button className='bg-primary'>Get Started</Button>
-        <Button className='bg-primary'>Get Started</Button>
+      <div className="flex flex-row justify-between p-4 text-white">
+        <div className="gap-2">
+          <Button className="bg-primary">New Post</Button>
         </div>
-        <div className=''>
-          <Button className='bg-primary'>Get Started</Button>
+        <div className="">
+          <Button className="bg-primary">Get Started</Button>
         </div>
       </div>
-      <div className='border-dashed border-[1px] min-h-screen rounded-xl'>
-        <FetchPage />
+     {/* Another section */}
+      <div className="gap-10 flex flex-col">
+        <div className="p-4">
+        <h1 className="text-3xl font-bold">Nearby Posts</h1>
+        <p className="text-primary/50">Posted recently</p>
+        </div>
+        <div className="p-2 min-h-[40vh] border-dashed border-[1px] rounded-xl">
+          <FetchPage />
+        </div>
+        <div className="p-2 min-h-[40vh] border-dashed border-[1px] rounded-xl">
+          <h1 className="text-xl p-2 font-bold underline">Nearby Posts</h1>
+          <FetchPage />
+        </div>
       </div>
 
-      {/* New div added below the video to take up the remaining 100vh */}
-
-      <div className="absolute text-white md:w-11/12 lg:w-full w-11/12 justify-center items-center flex md:mt-40 mt-32">
-        <div className="relative flex items-center backdrop-blur-lg bg-base-100/80 rounded-full p-3 w-3/4 sm:w-1/2 lg:w-1/3">
+      <div className="absolute text-white md:w-11/12 lg:w-11/12 w-11/12 justify-center items-center flex md:mt-40 mt-32">
+        <div className="relative flex items-center backdrop-blur-lg bg-base-100/80 rounded-full border-white p-3 w-3/4 sm:w-1/2 lg:w-1/3">
           <LocateFixedIcon size={25} className="" />
           <Input
             className="border-none w-full shadow-none focus:outline-none active:ring-0 focus:ring-0"
@@ -70,7 +78,7 @@ const HomePage = () => {
             <button
               className="absolute right-3 text-gray-500 hover:text-black"
               onClick={() => {
-                setQuery('');
+                setQuery("");
                 setShowResults(false);
               }}
             >
@@ -86,7 +94,11 @@ const HomePage = () => {
                 key={index}
                 className="p-2 cursor-pointer hover:bg-white hover:text-black rounded-xl border-none"
                 onClick={() =>
-                  handleSelectLocation(result.geometry.lat, result.geometry.lng, result.formatted)
+                  handleSelectLocation(
+                    result.geometry.lat,
+                    result.geometry.lng,
+                    result.formatted
+                  )
                 }
               >
                 {result.formatted}
