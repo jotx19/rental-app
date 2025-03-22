@@ -16,12 +16,14 @@ interface PostData {
 
 interface PostState {
     isCurrentLocation: boolean;
+    isCreatingPost: boolean;
     currentLocation: { latitude: number; longitude: number } | null;
     locationQuery: string;
     searchResults: any[];
     createPost: (data: PostData) => Promise<any>;
     getCurrentLocation: () => void;
     getNearbyPosts: () => void;
+    getLatestPost:() => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
 }
@@ -31,39 +33,28 @@ const OPEN_CAGE_API_URL = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const usePostStore = create<PostState>((set, get) => ({
     isCurrentLocation: false,
+    isCreatingPost: false,
     currentLocation: null,
     locationQuery: '',
     searchResults: [],
 
-    createPost: async (data: PostData) => {
+    createPost: async (data) => {
+        set({ isCreatingPost: true }); 
+    
         try {
-            if (!data.latitude || !data.longitude) {
-                toast.error("Please provide location.");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('price', data.price);
-            formData.append('description', data.description);
-            formData.append('type', data.type);
-            formData.append('utilities', JSON.stringify(data.utilities));
-            formData.append('latitude', data.latitude.toString());
-            formData.append('longitude', data.longitude.toString());
-            if (data.image) formData.append('image', data.image);
-
-            const res = await axiosInstance.post("/post/create-post", formData);
-            toast.success("Post created successfully");
-            return res.data;
-        } catch (error: AxiosError | any) {
-            if (error.response) {
-                toast.error(error.response.data.message);
-            } else if (error.request) {
-                toast.error("Network error. Please try again later.");
-            } else {
-                toast.error("An error occurred. Please try again later.");
-            }
+          const res = await axiosInstance.post("/post/create-post", data, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          toast.success("Post created successfully");
+          return res.data;
+        } catch (error) {
+          const axiosError = error as AxiosError<any>;
+          toast.error(axiosError.response?.data?.message || "Failed to create post");
+        } finally {
+          set({ isCreatingPost: false });
         }
-    },
+      },
+    
 
     getCurrentLocation: () => {
         if (navigator.geolocation) {
@@ -109,7 +100,6 @@ export const usePostStore = create<PostState>((set, get) => ({
             });
 
             if (res.data.posts) {
-                toast.success("Nearby posts fetched successfully");
             }
             return res.data.posts;
         } catch (error: AxiosError | any) {
@@ -151,4 +141,22 @@ export const usePostStore = create<PostState>((set, get) => ({
         });
         get().getNearbyPosts();
     },
+
+    getLatestPost: async () => {
+        try {
+            const res = await axiosInstance.get("/post/latest-post");
+            if (res.data.posts) {
+            }
+            return res.data.posts;
+        } catch (error: AxiosError | any) {
+            if (error.response) {
+                toast.error(error.response.data.message);
+            } else if (error.request) {
+                toast.error("Network error. Please try again later.");
+            } else {
+                toast.error("An error occurred. Please try again later.");
+            }
+        }
+    }
+    
 }));

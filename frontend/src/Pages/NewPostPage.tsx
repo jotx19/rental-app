@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {toast} from "sonner";
-import { Upload, X } from "lucide-react";
+import { toast } from "sonner";
+import { usePostStore } from "@/store/usePostStore";
+import ImageUpload from "@/components/ImageUpload";
 
 const utilitiesOptions = [
   "Furnished",
@@ -18,15 +19,27 @@ const utilitiesOptions = [
 ];
 
 const NewPostPage = () => {
+  const { createPost, searchLocation, setLocation, searchResults } = usePostStore();
+
   const [formData, setFormData] = useState({
     price: "",
     description: "",
     type: "",
     utilities: [] as string[],
     image: null as File | null,
+    address: "",
+    latitude: 0,
+    longitude: 0,
   });
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (formData.address.length >= 3) {
+      searchLocation(formData.address);
+    }
+  }, [formData.address, searchLocation]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,32 +58,72 @@ const NewPostPage = () => {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
+  const handleImageChange = (file: File | null) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-      setFormData({ ...formData, image: file });
+    } else {
+      setImagePreview(null);
     }
+    setFormData({ ...formData, image: file });
   };
 
-  const removeImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    setFormData({ ...formData, image: null });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.price || !formData.type) {
-      toast.error("Please fill in all required fields.");
+  
+    if (!formData.price || !formData.type || !formData.utilities.length || !formData.latitude || !formData.longitude) {
+      toast.error("Please fill in all required fields and ensure location is fetched.");
       return;
     }
+  
+    setLoading(true);
+  
+    const postData = new FormData();
+    postData.append("price", formData.price);
+    postData.append("description", formData.description);
+    postData.append("type", formData.type);
+    postData.append("utilities", JSON.stringify(formData.utilities));
+    postData.append("latitude", formData.latitude.toString());
+    postData.append("longitude", formData.longitude.toString());
+  
+    if (formData.image) {
+      postData.append("image", formData.image);
+    }
+  
+    try {
+      const result = await createPost({
+        price: formData.price,
+        description: formData.description,
+        type: formData.type,
+        utilities: formData.utilities,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        image: formData.image,
+      });
+  
+      if (result) {
+        setFormData({ price: "", description: "", type: "", utilities: [], image: null, address: "", latitude: 0, longitude: 0 });
+        setImagePreview(null);
+      }
+    } catch (error) {
+      toast.error("Failed to create post.");
+    }
+  
+    setLoading(false);
+  };
+  
 
-    toast.success("Form submitted (logic not implemented yet)");
+  const handleAddressSelect = (lat: number, lon: number, name: string) => {
+    setLocation(lat, lon, name);
+    setFormData((prev) => ({
+      ...prev,
+      address: name,
+      latitude: lat,
+      longitude: lon,
+    }));
   };
 
   return (
@@ -79,36 +132,7 @@ const NewPostPage = () => {
         <h2 className="text-3xl font-bold text-center">Create New Post</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-2">
-            <Label>Upload Image</Label>
-            <div className="relative w-full h-38 bg-transparent rounded-lg border border-dashed flex items-center justify-center cursor-pointer">
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-38 object-cover rounded-lg border border-zinc-700"
-                />
-              ) : (
-                <Upload className="text-gray-500 text-3xl" />
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                ref={fileInputRef}
-              />
-              {imagePreview && (
-                <button
-                  onClick={removeImage}
-                  className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-                  type="button"
-                >
-                  <X className="text-black text-sm" />
-                </button>
-              )}
-            </div>
-          </div>
+          <ImageUpload onImageChange={handleImageChange} imagePreview={imagePreview} />
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
@@ -117,7 +141,7 @@ const NewPostPage = () => {
 
           <div className="flex gap-4">
             <div className="w-1/2 space-y-2">
-              <Label htmlFor="price">Price<span className="rounded text-black p-1 bg-gray-200">CAD</span></Label>
+              <Label htmlFor="price">Price <span className="rounded text-black p-1 bg-gray-200">CAD</span></Label>
               <Input id="price" name="price" type="number" value={formData.price} onChange={handleInputChange} required />
             </div>
 
@@ -132,6 +156,34 @@ const NewPostPage = () => {
                   <SelectItem value="Sale">Sale</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Input
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              onBlur={() => searchLocation(formData.address)}
+              placeholder="Enter address"
+            />
+            <div className="mt-2">
+              {searchResults.length > 0 && (
+                <ul className="space-y-2">
+                  {searchResults.map((result) => (
+                    <li key={result.formatted}>
+                      <Button
+                        onClick={() => handleAddressSelect(result.geometry.lat, result.geometry.lng, result.formatted)}
+                        className="w-full text-left"
+                      >
+                        {result.formatted}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
@@ -155,10 +207,15 @@ const NewPostPage = () => {
             </div>
           </div>
 
-
           <div className="flex justify-center">
-            <Button type="submit" className="px-15 py-2 bg-white hover:text-[#5AF2A6] hover:bg-[#001F10] text-black font-semibold text-sm rounded-md">
-              Create Post
+            <Button 
+              type="submit"
+              disabled={loading}
+              className={`px-15 py-2 font-semibold text-sm rounded-md transition-all ${
+                loading ? "bg-gray-400 cursor-not-allowed" : "bg-white hover:text-[#5AF2A6] hover:bg-[#001F10] text-black"
+              }`}
+            >
+              {loading ? "Creating..." : "Create Post"}
             </Button>
           </div>
         </form>

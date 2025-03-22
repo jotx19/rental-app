@@ -1,56 +1,39 @@
 import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
 import cloudinary from "../lib/cloudinary.js";
-import fs from 'fs';
-
-const uploadImage = async (image) => {
-    if (!image) {
-        return null;
-    }
-
-    try {
-        let uploadResponse;
-
-        if (image.startsWith('data:image/')) {
-            uploadResponse = await cloudinary.uploader.upload(image, {
-                folder: 'post_images',
-            });
-        } else {
-            uploadResponse = await cloudinary.uploader.upload(image.tempFilePath, {
-                folder: 'post_images',
-            });
-
-            fs.unlinkSync(image.tempFilePath);
-        }
-
-        return uploadResponse.secure_url;
-    } catch (error) {
-        throw new Error("Image upload failed: " + error.message);
-    }
-};
+import fs from "fs";
 
 export const createPost = async (req, res) => {
+    // console.log("Received Request Body:", req.body);
     const { price, description, type, latitude, longitude, utilities } = req.body;
-    const image = req.files?.image;
+    const image = req.file;
+    const parsedUtilities = Array.isArray(utilities) ? utilities : JSON.parse(utilities);
 
-    if (!price || !type || !latitude || !longitude) {
-        return res.status(400).json({ message: "Please enter all required fields" });
+    if (!latitude || !longitude) {
+        return res.status(400).json({ message: "Please enter location" });
+    }
+
+    let imageUrl = null;
+    if (image){
+        const uploadResposnse = await cloudinary.uploader.upload(image.path,{
+            folder: 'chat_app',
+        });
+
+        imageUrl = uploadResposnse.secure_url;
+        fs.unlinkSync(image.path);
     }
 
     try {
-        const imageUrl = await uploadImage(image);
-
         const newPost = new Post({
             user: req.user._id,
             price,
             description,
             type,
-            utilities,
+            utilities: parsedUtilities,
             location: {
                 type: "Point",
                 coordinates: [longitude, latitude],
             },
-            image: imageUrl,
+            image: imageUrl ? imageUrl : null,
         });
 
         await newPost.save();
@@ -60,6 +43,7 @@ export const createPost = async (req, res) => {
         return res.status(500).json({ message: "Error creating post", error });
     }
 };
+
 
 export const getPostById = async (req, res) => {
     try {
@@ -136,7 +120,7 @@ export const editPost = async (req, res) => {
 };
 
 export const getNearbyPosts = async (req, res) => {
-    const { latitude, longitude, radius = 1 } = req.query;
+    const { latitude, longitude, radius = 100 } = req.query;
 
     if (!latitude || !longitude) {
         return res.status(400).json({ message: "Latitude and Longitude are required" });
@@ -163,3 +147,16 @@ export const getNearbyPosts = async (req, res) => {
         return res.status(500).json({ message: "Error fetching nearby posts", error });
     }
 };
+
+export const getRecentPostsWithImages = async (req, res) => {
+        try {
+            const posts = await Post.find() 
+                .sort({ createdAt: -1 }) 
+                .limit(10);  
+    
+            return res.status(200).json({ posts });
+        } catch (error) {
+            console.log("Error fetching recent posts with images: ", error);
+            return res.status(500).json({ message: "Error fetching posts", error });
+        }
+    };
