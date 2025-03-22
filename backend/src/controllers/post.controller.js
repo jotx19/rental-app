@@ -3,7 +3,7 @@ import cloudinary from "../lib/cloudinary.js";
 import fs from "fs";
 
 export const createPost = async (req, res) => {
-    // console.log("Received Request Body:", req.body);
+    console.log("Received Request Body:", req.body);
     const { price, description, type, latitude, longitude, utilities } = req.body;
     const image = req.file;
     const parsedUtilities = Array.isArray(utilities) ? utilities : JSON.parse(utilities);
