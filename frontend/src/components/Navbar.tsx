@@ -14,7 +14,7 @@ const Navbar = () => {
   }, [theme]);
 
   return (
-    <header className="font-custom text-white rounded-2xl fixed border top-2 left-1/2 transform -translate-x-1/2 w-[80vw] z-40 backdrop-blur-lg bg-base-100/80">
+    <header className="font-custom text-white rounded-2xl fixed border top-2 left-1/2 transform -translate-x-1/2 w-[80vw] z-20 backdrop-blur-lg bg-base-100/80">
       <div className="container mx-auto px-3 h-14 flex items-center justify-between">
         <Link
           to="/"

@@ -4,23 +4,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { usePostStore } from '@/store/usePostStore';
 
-const FetchPage = () => {
+interface FetchPageProps {
+  onPostClick: (post: any) => void;
+}
+
+const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
   const { currentLocation, getNearbyPosts } = usePostStore();
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // Start with loading as true to show skeleton
 
   useEffect(() => {
     if (!currentLocation) return;
 
     const fetchPosts = async () => {
-      setLoading(true);
+      setLoading(true); // Always true during fetching
       try {
         const fetchedPosts = await getNearbyPosts();
-        setPosts(typeof fetchedPosts !== 'undefined' ? fetchedPosts : []);
+        setPosts(Array.isArray(fetchedPosts) ? fetchedPosts : []);
       } catch (error) {
         toast.error('Error fetching posts.');
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after fetching
       }
     };
 
@@ -29,11 +33,8 @@ const FetchPage = () => {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-      {!currentLocation ? (
-        <div className="col-span-4 justify-center text-center text-gray-500">
-          <p>Please enter an address above to display nearby posts.</p>
-        </div>
-      ) : loading ? (
+      {/* Always show skeleton loader while loading */}
+      {loading ? (
         Array(8)
           .fill(null)
           .map((_, index) => (
@@ -48,6 +49,7 @@ const FetchPage = () => {
           <div
             key={post._id}
             className="p-2 border rounded-md shadow-md flex flex-col justify-between"
+            onClick={() => onPostClick(post)} // Pass the post to the handler when clicked
           >
             {/* Image Section (Rectangular 16:9 Aspect Ratio) */}
             <div className="w-full aspect-[16/9] overflow-hidden rounded-md">
@@ -68,7 +70,7 @@ const FetchPage = () => {
             </h3>
 
             {/* Price with $ Sign */}
-            <p className="text-xs font-bold text-black bg-primary px-2 py-1 rounded-md w-fit mt-1">
+            <p className="text-xs font-bold border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
               ${post.price}
             </p>
 

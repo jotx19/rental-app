@@ -1,12 +1,13 @@
-import FetchLatestPost from "@/components/FetchLatestPost";
-import FetchPage from "@/components/FetchPost";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { usePostStore } from "@/store/usePostStore";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import PostSkeletonLoader from "@/components/SkeletonLoader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LocateFixedIcon, Search } from "lucide-react";
+import { usePostStore } from "@/store/usePostStore";
+import FetchLatestPost from "@/components/FetchLatestPost";
+import FetchPage from "@/components/FetchPost";
+import PostModal from "@/components/PostModal";
+import PostSkeletonLoader from "@/components/SkeletonLoader";
 
 const HomePage = () => {
   const {
@@ -17,6 +18,8 @@ const HomePage = () => {
   } = usePostStore();
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<any>(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -35,6 +38,16 @@ const HomePage = () => {
     setShowResults(false);
   };
 
+  const handlePostClick = (post: any) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPost(null);
+  };
+
   return (
     <div className="relative p-3 flex flex-col">
       <video
@@ -42,7 +55,7 @@ const HomePage = () => {
         autoPlay
         loop
         muted
-        className="object-cover w-full md:h-[30vh] h-[20vh] mt-20 "
+        className="object-cover rounded-xl w-full md:h-[30vh] h-[20vh] mt-20 "
       />
 
       <div className="absolute text-white md:w-11/12 lg:w-11/12 w-11/12 justify-center items-center flex md:mt-40 mt-32">
@@ -51,6 +64,8 @@ const HomePage = () => {
           <Input
             className="border-none w-full shadow-none focus:outline-none active:ring-0 focus:ring-0"
             placeholder="Search here ..."
+            value={query}
+            onChange={handleInputChange}
           />
         </div>
       </div>
@@ -66,13 +81,13 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col md:p-8 p-0">
         <div className="p-4">
           <h1 className="md:text-3xl font-bold">Recently Uploaded Post</h1>
           <p className="text-primary/50">Posted recently</p>
         </div>
-        <div className="p-2 min-h-[40vh] border-dashed border-[1px] rounded-xl">
-          {isCreatingPost ? <PostSkeletonLoader /> : <FetchLatestPost />}
+        <div className="p-2 min-h-[40vh] rounded-xl">
+          {isCreatingPost ? <PostSkeletonLoader /> : <FetchLatestPost onPostClick={handlePostClick} />}
         </div>
         <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
           <div className="flex md:justify-between md:flex-row flex-col">
@@ -82,7 +97,7 @@ const HomePage = () => {
               <div className="relative w-full">
                 <LocateFixedIcon
                   size={20}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2"
                 />
                 <Input
                   className="border w-full pl-10"
@@ -112,9 +127,17 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-          <FetchPage />
+          <FetchPage onPostClick={handlePostClick} />
         </div>
       </div>
+
+      {selectedPost && (
+        <PostModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          post={selectedPost}
+        />
+      )}
     </div>
   );
 };
