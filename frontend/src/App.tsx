@@ -59,6 +59,7 @@ const App: FC = () => {
         <AppContent />
       </Router>
       <Toaster
+        // Custom sooner
         // position="top-center"
         // toastOptions={{
         //   style: {

@@ -41,7 +41,7 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {loading
-        ? Array(8)
+        ? Array(4)
             .fill(null)
             .map((_, index) => (
               <div key={index} className="p-2 border rounded-md shadow-md">
