@@ -17,15 +17,21 @@ interface PostData {
 interface PostState {
     isCurrentLocation: boolean;
     isCreatingPost: boolean;
+    isFetchingPosts: boolean;
     currentLocation: { latitude: number; longitude: number } | null;
     locationQuery: string;
     searchResults: any[];
+    userPosts: any[];
     createPost: (data: PostData) => Promise<any>;
     getCurrentLocation: () => void;
     getNearbyPosts: () => void;
     getLatestPost:() => void;
+    getAllPosts: (userId: string) => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
+    selectedPost: any | null;
+    setSelectedPost: (post: any | null) => void;
+    closeModal: () => void;
 }
 
 const OPEN_CAGE_API_KEY = 'b4ed2449e7024e8fa1cdb57e4acbef3c';
@@ -34,9 +40,14 @@ const OPEN_CAGE_API_URL = 'https://api.opencagedata.com/geocode/v1/json';
 export const usePostStore = create<PostState>((set, get) => ({
     isCurrentLocation: false,
     isCreatingPost: false,
+    isFetchingPosts: false,
     currentLocation: null,
     locationQuery: '',
     searchResults: [],
+    userPosts: [],
+    selectedPost: null,
+    setSelectedPost: (post) => set({ selectedPost: post }),
+    closeModal: () => set({ selectedPost: null }),
 
     createPost: async (data) => {
         set({ isCreatingPost: true }); 
@@ -53,9 +64,8 @@ export const usePostStore = create<PostState>((set, get) => ({
         } finally {
           set({ isCreatingPost: false });
         }
-      },
+    },
     
-
     getCurrentLocation: () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -157,6 +167,32 @@ export const usePostStore = create<PostState>((set, get) => ({
                 toast.error("An error occurred. Please try again later.");
             }
         }
-    }
+    },
+
+    getAllPosts: async (authUser: any) => {
+        set({ isFetchingPosts: true });
+      
+        try {
+          const res = await axiosInstance.get(`/post/${authUser}/posts`); 
+      
+          if (res.data && res.data.post) {
+            set({ userPosts: res.data.post }); 
+          }
+        } catch (error: AxiosError | any) {
+          console.error("Error fetching posts:", error);
+      
+          if (error.response) {
+            toast.error(error.response.data.message);
+          } else if (error.request) {
+            toast.error("Network error. Please try again later.");
+          } else {
+            toast.error("An error occurred. Please try again later.");
+          }
+        } finally {
+          set({ isFetchingPosts: false });
+        }
+      }
+      
+    
     
 }));

@@ -13,6 +13,7 @@ import { Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import EmailVerifyPage from "./Pages/EmailVerifyPage";
 import NewPostPage from "./Pages/NewPostPage";
+import PostPage from "./Pages/PostPage";
 
 const AppContent: FC = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -37,6 +38,7 @@ const AppContent: FC = () => {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/post-page/:postId" element={<PostPage />} />
         <Route path="/profile" element={<ProfilePage />}/>
         <Route path="/new-post" element={authUser ? <NewPostPage /> : <Navigate to="/login" />} />
         <Route path="/edit-post" element={authUser ? <EditPostPage /> : <Navigate to="/login" />} />

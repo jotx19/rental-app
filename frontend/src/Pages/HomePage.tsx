@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LocateFixedIcon, Search } from "lucide-react";
 import { usePostStore } from "@/store/usePostStore";
 import FetchLatestPost from "@/components/FetchLatestPost";
 import FetchPage from "@/components/FetchPost";
-import PostModal from "@/components/PostModal";
 import PostSkeletonLoader from "@/components/SkeletonLoader";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const {
     searchLocation,
     searchResults,
@@ -18,8 +18,6 @@ const HomePage = () => {
   } = usePostStore();
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<any>(null); 
-  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -39,13 +37,7 @@ const HomePage = () => {
   };
 
   const handlePostClick = (post: any) => {
-    setSelectedPost(post);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedPost(null);
+    navigate(`/post-page/${post.id}`, { state: { post } });
   };
 
   return (
@@ -86,7 +78,7 @@ const HomePage = () => {
           <h1 className="md:text-3xl font-bold">Recently Uploaded Post</h1>
           <p className="text-primary/50">Posted recently</p>
         </div>
-        <div className="p-2 min-h-[40vh] rounded-xl">
+        <div className="p-2 min-h-[20vh] md:min-h-[40vh] rounded-xl">
           {isCreatingPost ? <PostSkeletonLoader /> : <FetchLatestPost onPostClick={handlePostClick} />}
         </div>
         <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
@@ -130,14 +122,6 @@ const HomePage = () => {
           <FetchPage onPostClick={handlePostClick} />
         </div>
       </div>
-
-      {selectedPost && (
-        <PostModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          post={selectedPost}
-        />
-      )}
     </div>
   );
 };

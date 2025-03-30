@@ -11,20 +11,20 @@ interface FetchPageProps {
 const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
   const { currentLocation, getNearbyPosts } = usePostStore();
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Start with loading as true to show skeleton
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!currentLocation) return;
 
     const fetchPosts = async () => {
-      setLoading(true); // Always true during fetching
+      setLoading(true);
       try {
         const fetchedPosts = await getNearbyPosts();
         setPosts(Array.isArray(fetchedPosts) ? fetchedPosts : []);
       } catch (error) {
         toast.error('Error fetching posts.');
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false);
       }
     };
 
@@ -33,7 +33,6 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-      {/* Always show skeleton loader while loading */}
       {loading ? (
         Array(8)
           .fill(null)
@@ -49,9 +48,8 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
           <div
             key={post._id}
             className="p-2 border rounded-md shadow-md flex flex-col justify-between"
-            onClick={() => onPostClick(post)} // Pass the post to the handler when clicked
+            onClick={() => onPostClick(post)}
           >
-            {/* Image Section (Rectangular 16:9 Aspect Ratio) */}
             <div className="w-full aspect-[16/9] overflow-hidden rounded-md">
               {post.image ? (
                 <img
@@ -64,19 +62,16 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
               )}
             </div>
 
-            {/* Post Info */}
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
               {post.description}
             </h3>
 
-            {/* Price with $ Sign */}
             <p className="text-xs font-bold border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
               ${post.price}
             </p>
 
-            {/* Utilities as Badges */}
             <div className="flex flex-wrap gap-1 mt-1">
-              {post.utilities.map((utility: string, index: number) => (
+              {post.utilities.slice(0, 1).map((utility: string, index: number) => (
                 <Badge
                   key={index}
                   variant="secondary"
@@ -85,9 +80,19 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
                   {utility}
                 </Badge>
               ))}
+              <div className="hidden sm:flex flex-wrap gap-1 mt-1">
+                {post.utilities.slice(1).map((utility: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="px-2 py-0.5 text-[10px] rounded-md"
+                  >
+                    {utility}
+                  </Badge>
+                ))}
+              </div>
             </div>
 
-            {/* Distance Info */}
             <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
               {post.distance !== undefined
                 ? `${post.distance.toFixed(2)} km away`

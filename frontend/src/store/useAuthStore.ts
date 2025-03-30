@@ -4,12 +4,10 @@ import { create } from 'zustand';
 import { AxiosError } from 'axios';
 
 interface authUser {
-    id: string;       
+    _id: string;       
     name: string;     
     email: string;    
     verified: boolean; 
-    otp?: string;      
-    otpExpiry?: Date; 
 }
 
 interface AuthState {

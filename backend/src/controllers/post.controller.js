@@ -45,7 +45,7 @@ export const createPost = async (req, res) => {
 };
 
 
-export const getPostById = async (req, res) => {
+export const getPostByUserId = async (req, res) => {
     try {
         const userId = req.params.id;
         const post = await Post.find({ user: userId }).populate("user", "name profilePic");
@@ -152,7 +152,8 @@ export const getRecentPostsWithImages = async (req, res) => {
         try {
             const posts = await Post.find() 
                 .sort({ createdAt: -1 }) 
-                .limit(10);  
+                .limit(10)
+                .populate("user", "name email profilePic");
     
             return res.status(200).json({ posts });
         } catch (error) {
