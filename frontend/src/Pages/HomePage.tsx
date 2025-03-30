@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LocateFixedIcon, Search } from "lucide-react";
+import { LocateFixedIcon, Search, CornerDownLeft } from "lucide-react";
 import { usePostStore } from "@/store/usePostStore";
 import FetchLatestPost from "@/components/FetchLatestPost";
 import FetchPage from "@/components/FetchPost";
@@ -10,12 +10,8 @@ import PostSkeletonLoader from "@/components/SkeletonLoader";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const {
-    searchLocation,
-    searchResults,
-    setLocation,
-    isCreatingPost,
-  } = usePostStore();
+  const { searchLocation, searchResults, setLocation, isCreatingPost } =
+    usePostStore();
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
 
@@ -54,11 +50,12 @@ const HomePage = () => {
         <div className="relative flex items-center backdrop-blur-lg bg-base-100/80 rounded-full border-white p-3 w-3/4 sm:w-1/2 lg:w-1/3">
           <Search size={25} className="text-white" />
           <Input
-            className="border-none w-full shadow-none focus:outline-none active:ring-0 focus:ring-0"
+            className="border-none w-full shadow-none focus:outline-none active:ring-0 focus:ring-0 px-3"
             placeholder="Search here ..."
             value={query}
             onChange={handleInputChange}
           />
+          <CornerDownLeft size={20} className="text-white cursor-pointer" />
         </div>
       </div>
 
@@ -79,7 +76,11 @@ const HomePage = () => {
           <p className="text-primary/50">Posted recently</p>
         </div>
         <div className="p-2 min-h-[20vh] md:min-h-[40vh] rounded-xl">
-          {isCreatingPost ? <PostSkeletonLoader /> : <FetchLatestPost onPostClick={handlePostClick} />}
+          {isCreatingPost ? (
+            <PostSkeletonLoader />
+          ) : (
+            <FetchLatestPost onPostClick={handlePostClick} />
+          )}
         </div>
         <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
           <div className="flex md:justify-between md:flex-row flex-col">

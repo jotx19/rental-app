@@ -25,6 +25,7 @@ interface PostState {
     locationAddress: string | null;
     searchResults: any[];
     userPosts: any[];
+    selectedPost: any | null;
     createPost: (data: PostData) => Promise<any>;
     getCurrentLocation: () => void;
     getNearbyPosts: () => void;
@@ -33,8 +34,8 @@ interface PostState {
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
     getLocationFromCoordinates: (coordinates: [number, number]) => void;
-    selectedPost: any | null;
     setSelectedPost: (post: any | null) => void;
+    deletePost: (postId: string) => Promise<void>;
     closeModal: () => void;
 }
 
@@ -226,6 +227,20 @@ export const usePostStore = create<PostState>((set, get) => ({
         } catch (error) {
             console.error('Error fetching location data', error);
             toast.error('Error fetching location data');
+        }
+    },
+    deletePost: async (postId: string) => {
+        try {
+            const res = await axiosInstance.delete(`/post/${postId}/delete-post`); // Assuming the endpoint is '/post/:id'
+            if (res.status === 200) {
+                toast.success("Post deleted successfully");
+                set((state) => ({
+                    userPosts: state.userPosts.filter((post) => post._id !== postId),
+                }));
+            }
+        } catch (error: AxiosError | any) {
+            console.error("Error deleting post:", error);
+            toast.error(error.response?.data?.message || "Failed to delete post");
         }
     },
        

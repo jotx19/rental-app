@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { usePostStore } from "@/store/usePostStore";
+import { useNavigate } from 'react-router-dom';
 import ImageUpload from "@/components/ImageUpload";
 
 const utilitiesOptions = [
@@ -30,11 +31,12 @@ const NewPostPage = () => {
     address: "",
     latitude: 0,
     longitude: 0,
-    contact: "", // added contact field
+    contact: "",
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (formData.address.length >= 3) {
@@ -89,7 +91,7 @@ const NewPostPage = () => {
     postData.append("utilities", JSON.stringify(formData.utilities));
     postData.append("latitude", formData.latitude.toString());
     postData.append("longitude", formData.longitude.toString());
-    postData.append("contact", formData.contact); // append contact
+    postData.append("contact", formData.contact);
     
     if (formData.image) {
       postData.append("image", formData.image);
@@ -104,13 +106,14 @@ const NewPostPage = () => {
         latitude: formData.latitude,
         longitude: formData.longitude,
         image: formData.image,
-        contact: formData.contact, // include contact number
+        contact: formData.contact,
       });
   
       if (result) {
         setFormData({ price: "", description: "", type: "", utilities: [], image: null, address: "", latitude: 0, longitude: 0, contact: "" });
         setImagePreview(null);
       }
+      navigate('/')
     } catch (error) {
       toast.error("Failed to create post.");
     }
@@ -182,20 +185,20 @@ const NewPostPage = () => {
               name="address"
               value={formData.address}
               onChange={handleInputChange}
-              onBlur={() => searchLocation(formData.address)}
+              // onBlur={() => searchLocation(formData.address)}
               placeholder="Enter address"
             />
             <div className="mt-2">
               {searchResults.length > 0 && (
-                <ul className="space-y-2">
+                <ul className="p-3 shadow-md rounded-lg md:w-[calc(100%-54.5vw)] w-[calc(100%-12vw)] bg-primary/90 absolute z-10">
                   {searchResults.map((result) => (
                     <li key={result.formatted}>
-                      <Button
+                      <div
                         onClick={() => handleAddressSelect(result.geometry.lat, result.geometry.lng, result.formatted)}
-                        className="w-full text-left"
+                        className="p-2 cursor-pointer hover:bg-white/80 hover:text-black text-black rounded-xl"
                       >
                         {result.formatted}
-                      </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>

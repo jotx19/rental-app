@@ -3,13 +3,16 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { usePostStore } from "@/store/usePostStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmojiAvatar from "@/components/EmojiAvatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const ProfilePage = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-  const { getAllPosts, userPosts, isFetchingPosts } = usePostStore();
+  const { getAllPosts, userPosts, isFetchingPosts, deletePost } = usePostStore();
   const [loading, setLoading] = useState<boolean>(isFetchingPosts);
+  const [selectedPost, setSelectedPost] = useState<{ _id: string; [key: string]: any } | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -30,17 +33,27 @@ const ProfilePage = () => {
   }
 
   if (!authUser) {
-    return <p className="text-center mt-10 text-red-500">User not authenticated</p>;
+    return null;
   }
+
+  const handleDeletePost = async () => {
+    if (selectedPost) {
+      await deletePost(selectedPost._id);
+      setOpenDialog(false); 
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, post: any) => {
+    e.preventDefault();
+    setSelectedPost(post);
+    setOpenDialog(true); 
+  };
 
   return (
     <div className="max-w-4xl mt-20 mx-auto p-6">
-      <Card className="p-6 shadow-md border rounded-lg">
+      <Card className="p-6 border rounded-lg">
         <div className="flex items-center gap-6">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src="/profile.jpg" alt={authUser.name} />
-            <AvatarFallback>{authUser.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <EmojiAvatar /> 
 
           <div className="flex flex-col">
             <h2 className="text-xl font-semibold">{authUser.name}</h2>
@@ -72,6 +85,7 @@ const ProfilePage = () => {
                 <div
                   key={post._id}
                   className="p-2 border rounded-md shadow-md flex flex-col justify-between"
+                  onContextMenu={(e) => handleContextMenu(e, post)} 
                 >
                   <div className="w-full aspect-[16/9] overflow-hidden rounded-md">
                     {post.image ? (
@@ -92,6 +106,17 @@ const ProfilePage = () => {
                   <p className="text-xs font-bold border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
                     ${post.price}
                   </p>
+
+                  <Button
+                    variant="destructive"
+                    className="mt-2"
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setOpenDialog(true);
+                    }}
+                  >
+                    Delete
+                  </Button>
                 </div>
               ))}
             </div>
@@ -100,6 +125,24 @@ const ProfilePage = () => {
           )}
         </div>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Post?</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeletePost}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

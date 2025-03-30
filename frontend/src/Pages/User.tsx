@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { usePostStore } from "@/store/usePostStore";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmojiAvatar from "@/components/EmojiAvatar";
 
 const UserPage = () => {
   const { userId } = useParams();
@@ -56,10 +56,7 @@ const UserPage = () => {
     <div className="max-w-4xl mt-20 mx-auto p-6">
       <Card className="p-6 shadow-md border rounded-lg">
         <div className="flex items-center gap-6">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src={user.avatar || "/profile.jpg"} alt={user.name} />
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <EmojiAvatar /> 
           <div className="flex flex-col">
             <h2 className="text-xl font-semibold">{user.name}</h2>
             <p className="text-gray-500 text-sm">{user.email}</p>
