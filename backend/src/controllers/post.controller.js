@@ -4,7 +4,7 @@ import fs from "fs";
 
 export const createPost = async (req, res) => {
     // console.log("Received Request Body:", req.body);
-    const { price, description, type, latitude, longitude, utilities } = req.body;
+    const { price, description, type, latitude, longitude, utilities, contact } = req.body;
     const image = req.file;
     const parsedUtilities = Array.isArray(utilities) ? utilities : JSON.parse(utilities);
 
@@ -28,6 +28,7 @@ export const createPost = async (req, res) => {
             price,
             description,
             type,
+            contact,
             utilities: parsedUtilities,
             location: {
                 type: "Point",
@@ -48,7 +49,7 @@ export const createPost = async (req, res) => {
 export const getPostByUserId = async (req, res) => {
     try {
         const userId = req.params.id;
-        const post = await Post.find({ user: userId }).populate("user", "name profilePic");
+        const post = await Post.find({ user: userId }).populate("user", "name email profilePic");
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
@@ -139,7 +140,14 @@ export const getNearbyPosts = async (req, res) => {
                     spherical: true,
                 },
             },
-        ]);
+        ])
+        .then(async (posts) => {
+            const populatedPosts = await Post.populate(posts, {
+                path: 'user', 
+                select: 'name email profilePic',
+            });
+            return populatedPosts;
+        });
 
         return res.status(200).json({ posts });
     } catch (error) {

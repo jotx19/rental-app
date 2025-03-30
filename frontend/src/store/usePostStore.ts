@@ -9,6 +9,7 @@ interface PostData {
     description: string;
     type: string;
     utilities: string[];
+    contact: string;
     image: File | null;
     latitude: number | null;
     longitude: number | null;
@@ -19,7 +20,9 @@ interface PostState {
     isCreatingPost: boolean;
     isFetchingPosts: boolean;
     currentLocation: { latitude: number; longitude: number } | null;
+    locationName: string | null;
     locationQuery: string;
+    locationAddress: string | null;
     searchResults: any[];
     userPosts: any[];
     createPost: (data: PostData) => Promise<any>;
@@ -29,6 +32,7 @@ interface PostState {
     getAllPosts: (userId: string) => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
+    getLocationFromCoordinates: (coordinates: [number, number]) => void;
     selectedPost: any | null;
     setSelectedPost: (post: any | null) => void;
     closeModal: () => void;
@@ -42,7 +46,9 @@ export const usePostStore = create<PostState>((set, get) => ({
     isCreatingPost: false,
     isFetchingPosts: false,
     currentLocation: null,
+    locationAddress: null,
     locationQuery: '',
+    locationName: null,
     searchResults: [],
     userPosts: [],
     selectedPost: null,
@@ -191,8 +197,37 @@ export const usePostStore = create<PostState>((set, get) => ({
         } finally {
           set({ isFetchingPosts: false });
         }
-      }
-      
+    },
+
+    getLocationFromCoordinates: async (coordinates: [number, number]) => {
+        const [lon, lat] = coordinates; // Destructure in the correct order (longitude, latitude)
+        
+        try {
+            const res = await axios.get(OPEN_CAGE_API_URL, {
+                params: {
+                    q: `${lat},${lon}`,  // Use lat and lon for the geocode API request
+                    key: OPEN_CAGE_API_KEY,
+                    no_annotations: 1,
+                    limit: 1,
+                },
+            });
     
+            const locationData = res.data.results[0];
+            if (locationData) {
+                const locationName = locationData.formatted; // Full address
+                const address = locationData.components; // Breakdown of address
+                set({
+                    locationName,
+                    locationAddress: `${address.road || ''}, ${address.city || ''}, ${address.state || ''}, ${address.country || ''}`,
+                });
+            } else {
+                toast.error('Could not fetch location information.');
+            }
+        } catch (error) {
+            console.error('Error fetching location data', error);
+            toast.error('Error fetching location data');
+        }
+    },
+       
     
 }));

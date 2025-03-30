@@ -30,6 +30,7 @@ const NewPostPage = () => {
     address: "",
     latitude: 0,
     longitude: 0,
+    contact: "", // added contact field
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -74,7 +75,7 @@ const NewPostPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    if (!formData.price || !formData.type || !formData.utilities.length || !formData.latitude || !formData.longitude) {
+    if (!formData.price || !formData.type || !formData.utilities.length || !formData.latitude || !formData.longitude || !formData.contact) {
       toast.error("Please fill in all required fields and ensure location is fetched.");
       return;
     }
@@ -88,7 +89,8 @@ const NewPostPage = () => {
     postData.append("utilities", JSON.stringify(formData.utilities));
     postData.append("latitude", formData.latitude.toString());
     postData.append("longitude", formData.longitude.toString());
-  
+    postData.append("contact", formData.contact); // append contact
+    
     if (formData.image) {
       postData.append("image", formData.image);
     }
@@ -102,10 +104,11 @@ const NewPostPage = () => {
         latitude: formData.latitude,
         longitude: formData.longitude,
         image: formData.image,
+        contact: formData.contact, // include contact number
       });
   
       if (result) {
-        setFormData({ price: "", description: "", type: "", utilities: [], image: null, address: "", latitude: 0, longitude: 0 });
+        setFormData({ price: "", description: "", type: "", utilities: [], image: null, address: "", latitude: 0, longitude: 0, contact: "" });
         setImagePreview(null);
       }
     } catch (error) {
@@ -139,13 +142,13 @@ const NewPostPage = () => {
             <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} required />
           </div>
 
-          <div className="flex gap-4">
-            <div className="w-1/2 space-y-2">
-              <Label htmlFor="price">Price <span className="rounded text-black p-1 bg-gray-200">CAD</span></Label>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="w-full space-y-2">
+              <Label htmlFor="price">Price <span className="rounded text-black bg-gray-200">CAD</span></Label>
               <Input id="price" name="price" type="number" value={formData.price} onChange={handleInputChange} required />
             </div>
 
-            <div className="w-1/2 mt-2 space-y-2">
+            <div className="w-full space-y-2">
               <Label>Type</Label>
               <Select onValueChange={handleTypeChange}>
                 <SelectTrigger>
@@ -156,6 +159,19 @@ const NewPostPage = () => {
                   <SelectItem value="Sale">Sale</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="w-full space-y-2">
+              <Label htmlFor="contact">Contact</Label>
+              <Input 
+                id="contact" 
+                name="contact" 
+                type="tel" 
+                value={formData.contact} 
+                onChange={handleInputChange} 
+                required 
+                placeholder="Enter contact number"
+              />
             </div>
           </div>
 

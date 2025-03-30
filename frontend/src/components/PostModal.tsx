@@ -70,16 +70,13 @@ const PostModal = ({ isOpen, onClose, post }: PostModalProps) => {
             </Badge>
           </div>
 
-          {/* Flexbox for user details */}
           <div className="flex flex-col md:flex-row gap-4 w-full justify-center items-center">
 
-            {/* Email section */}
             <div className="flex justify-center items-center text-center border gap-2 bg-white text-black rounded-lg p-2 w-full md:w-auto">
               <Mail className="text-[#47A8FF]" />
               <p className="text-sm">{authUser.email}</p>
             </div>
 
-            {/* User Name section */}
             <div className="flex justify-center items-center text-center border gap-2 bg-white text-black rounded-lg p-2 w-full md:w-auto">
               <User size={20} className="text-[#47A8FF]" />
               <p className="text-sm">{authUser.name}</p>

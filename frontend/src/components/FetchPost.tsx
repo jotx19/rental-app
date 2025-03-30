@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { usePostStore } from '@/store/usePostStore';
 
+
 interface FetchPageProps {
   onPostClick: (post: any) => void;
 }
@@ -47,10 +48,10 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
         posts.map((post) => (
           <div
             key={post._id}
-            className="p-2 border rounded-md shadow-md flex flex-col justify-between"
-            onClick={() => onPostClick(post)}
+            className="p-2 border rounded-md shadow-md flex flex-col justify-between relative"
+            onClick={() => onPostClick(post)} // Handle post click for navigation
           >
-            <div className="w-full aspect-[16/9] overflow-hidden rounded-md">
+            <div className="w-full aspect-[16/9] overflow-hidden rounded-md relative">
               {post.image ? (
                 <img
                   src={post.image}
@@ -60,6 +61,7 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
               ) : (
                 <div className="w-full h-full bg-primary/10" />
               )}
+
             </div>
 
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
@@ -80,6 +82,7 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
                   {utility}
                 </Badge>
               ))}
+              {/* showing only a few for mobile screen */}
               <div className="hidden sm:flex flex-wrap gap-1 mt-1">
                 {post.utilities.slice(1).map((utility: string, index: number) => (
                   <Badge

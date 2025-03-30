@@ -47,7 +47,7 @@ const HomePage = () => {
         autoPlay
         loop
         muted
-        className="object-cover rounded-xl w-full md:h-[30vh] h-[20vh] mt-20 "
+        className="object-cover rounded-xl w-full md:h-[30vh] h-[20vh] mt-16 "
       />
 
       <div className="absolute text-white md:w-11/12 lg:w-11/12 w-11/12 justify-center items-center flex md:mt-40 mt-32">

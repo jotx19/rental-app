@@ -19,6 +19,10 @@ const postSchema = new mongoose.Schema(
       enum: ["Rent", "Sale"],
       required: true,
     },
+    contact: {
+      type: String,
+      default: "",
+    },
     utilities: {
       type: [String],
       enum: [
