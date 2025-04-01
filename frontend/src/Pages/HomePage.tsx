@@ -7,6 +7,9 @@ import { usePostStore } from "@/store/usePostStore";
 import FetchLatestPost from "@/components/FetchLatestPost";
 import FetchPage from "@/components/FetchPost";
 import PostSkeletonLoader from "@/components/SkeletonLoader";
+import Footer from "@/components/Footer";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { BookOpen, MapPin, Upload, Plus } from "lucide-react";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -36,6 +39,13 @@ const HomePage = () => {
     navigate(`/post-page/${post.id}`, { state: { post } });
   };
 
+  // New function to handle the redirect when the user enters a search term
+  const handleSearchRedirect = () => {
+    if (query.trim().length > 0) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   return (
     <div className="relative p-3 flex flex-col">
       <video
@@ -43,7 +53,7 @@ const HomePage = () => {
         autoPlay
         loop
         muted
-        className="object-cover rounded-xl w-full md:h-[30vh] h-[20vh] mt-16 "
+        className="object-cover rounded-xl w-full md:h-[30vh] h-[20vh] mt-16"
       />
 
       <div className="absolute text-white md:w-11/12 lg:w-11/12 w-11/12 justify-center items-center flex md:mt-40 mt-32">
@@ -54,15 +64,23 @@ const HomePage = () => {
             placeholder="Search here ..."
             value={query}
             onChange={handleInputChange}
+            onKeyDown={(e) => e.key === "Enter" && handleSearchRedirect()}
           />
-          <CornerDownLeft size={20} className="text-white cursor-pointer" />
+          <CornerDownLeft
+            size={20}
+            className="text-white cursor-pointer"
+            onClick={handleSearchRedirect}
+          />
         </div>
       </div>
 
       <div className="flex flex-row justify-between p-4 text-white">
         <div className="gap-2">
           <Link to="/new-post">
-            <Button className="bg-primary">New Post</Button>
+            <Button className="bg-primary flex items-center">
+              <Plus size={20} className="mr-2" />{" "}
+              New Post
+            </Button>
           </Link>
         </div>
         <div className="">
@@ -122,7 +140,56 @@ const HomePage = () => {
           </div>
           <FetchPage onPostClick={handlePostClick} />
         </div>
+
+        <div className="mt-12 p-6">
+          <h2 className="text-2xl font-bold text-center">
+            How to Use This Platform
+          </h2>
+          <p className="text-gray-600 text-center mt-2">
+            Follow these simple steps to get started!
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-6">
+            <Card>
+              <CardHeader className="flex items-center">
+                <BookOpen size={28} className="text-primary" />
+                <CardTitle className="ml-3 text-lg">Explore Posts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                Browse the latest listings or search for specific locations to
+                find the best housing options.
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex items-center">
+                <MapPin size={28} className="text-primary" />
+                <CardTitle className="ml-3 text-lg">
+                  Find Nearby Listings
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                Use our location search to find available posts near you in
+                real-time.
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex items-center">
+                <Upload size={28} className="text-primary" />
+                <CardTitle className="ml-3 text-lg">
+                  Post Your Listing
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                Easily create and share your housing post with others looking
+                for a place.
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

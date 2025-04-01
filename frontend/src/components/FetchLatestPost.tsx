@@ -6,6 +6,9 @@ import { usePostStore } from '@/store/usePostStore';
 
 interface FetchLatestPostProps {
   onPostClick: (post: any) => void;
+  searchTerm?: string;
+  priceRange?: string | null;
+  postType?: string | null;
 }
 
 const getDaysAgo = (dateString: string) => {

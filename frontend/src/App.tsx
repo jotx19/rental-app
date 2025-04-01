@@ -15,6 +15,7 @@ import EmailVerifyPage from "./Pages/EmailVerifyPage";
 import NewPostPage from "./Pages/NewPostPage";
 import PostPage from "./Pages/PostPage";
 import User from "./Pages/User";
+import SearchPage from "./Pages/SearchPage";
 
 const AppContent: FC = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -39,6 +40,7 @@ const AppContent: FC = () => {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/user/:userId" element={<User />} />
         <Route path="/post-page/:postId" element={<PostPage />} />
         <Route path="/profile" element={<ProfilePage />}/>
