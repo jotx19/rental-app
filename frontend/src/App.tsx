@@ -16,6 +16,7 @@ import NewPostPage from "./Pages/NewPostPage";
 import PostPage from "./Pages/PostPage";
 import User from "./Pages/User";
 import SearchPage from "./Pages/SearchPage";
+import About from "./components/Sider/about";
 
 const AppContent: FC = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -49,6 +50,7 @@ const AppContent: FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/email-verification" element={<EmailVerifyPage />} />
+        <Route path="/about" element={<About/>} />
       </Routes>
     </div>
   );

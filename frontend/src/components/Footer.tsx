@@ -9,10 +9,10 @@ const Footer = () => {
           
           <nav className="w-full md:w-auto">
             <ul className="flex flex-col space-y-4 text-lg font-medium">
-              {["About Us", "Services", "Contact"].map((item, index) => (
+              {["About Us"].map((item, index) => (
                 <li key={index}>
                   <Link 
-                    to={`/${item.toLowerCase()}`} 
+                    to={item === "About Us" ? "/about" : `/${item.toLowerCase()}`} // Condition to link to about.tsx
                     className="group flex items-center relative overflow-hidden transition"
                   >
                     <span className="relative z-10">{item}</span>

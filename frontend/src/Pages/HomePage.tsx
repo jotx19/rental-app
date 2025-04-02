@@ -78,8 +78,7 @@ const HomePage = () => {
         <div className="gap-2">
           <Link to="/new-post">
             <Button className="bg-primary flex items-center">
-              <Plus size={20} className="mr-2" />{" "}
-              New Post
+              <Plus size={20} className="mr-2" /> New Post
             </Button>
           </Link>
         </div>
@@ -149,7 +148,7 @@ const HomePage = () => {
             Follow these simple steps to get started!
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6 mt-6">
+          <div className="grid md:grid-cols-3 gap-6 mb-6 mt-6">
             <Card>
               <CardHeader className="flex items-center">
                 <BookOpen size={28} className="text-primary" />
@@ -185,6 +184,43 @@ const HomePage = () => {
                 Easily create and share your housing post with others looking
                 for a place.
               </CardContent>
+            </Card>
+          </div>
+          <div className="w-full mt-10 max-w-7xl mx-auto">
+            <Card className="p-6">
+              <div className="flex flex-col gap-10">
+                <div className="flex flex-col md:flex-row w-full items-center justify-between gap-6">
+                  <div className="w-full md:w-1/2 flex justify-center">
+                    <img
+                      src="/first.png"
+                      alt="First Image"
+                      className="h-auto max-h-[50vh] w-full md:w-auto border rounded-lg object-cover"
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2 flex flex-col justify-center items-center text-center p-6 rounded-lg">
+                    <h1 className="text-2xl font-bold">Create New Post</h1>
+                    <p className="text-lg border-white border-b-2 border-none md:border-dotted hover:text-white mt-2">
+                      Easily share your housing listing with the community.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col-reverse md:flex-row w-full items-center justify-between gap-6">
+                  <div className="w-full md:w-1/2 flex flex-col justify-center items-center text-center p-6 rounded-lg">
+                    <h1 className="text-2xl font-bold">Find Nearby Listings</h1>
+                    <p className="text-lg border-white border-b-2 border-none md:border-dotted hover:text-white mt-2">
+                      Search for the best housing options available near you.
+                    </p>
+                  </div>
+                  <div className="w-full md:w-1/2 flex justify-center">
+                    <img
+                      src="/second.png"
+                      alt="Second Image"
+                      className="h-auto max-h-[50vh] w-full md:w-auto border rounded-lg object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
             </Card>
           </div>
         </div>
