@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,9 @@ const HomePage = () => {
     usePostStore();
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
+
+  // Ref for the "Find Nearby Listings" card
+  const lastCardRef = useRef<HTMLDivElement | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -39,11 +42,15 @@ const HomePage = () => {
     navigate(`/post-page/${post.id}`, { state: { post } });
   };
 
-  // New function to handle the redirect when the user enters a search term
   const handleSearchRedirect = () => {
     if (query.trim().length > 0) {
       navigate(`/search?q=${encodeURIComponent(query)}`);
     }
+  };
+
+  // Scroll to "Find Nearby Listings" card
+  const handleGetStartedClick = () => {
+    lastCardRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -82,8 +89,10 @@ const HomePage = () => {
             </Button>
           </Link>
         </div>
-        <div className="">
-          <Button className="bg-primary">Get Started</Button>
+        <div>
+          <Button className="bg-primary" onClick={handleGetStartedClick}>
+            Get Started
+          </Button>
         </div>
       </div>
 
@@ -93,41 +102,24 @@ const HomePage = () => {
           <p className="text-primary/50">Posted recently</p>
         </div>
         <div className="p-2 min-h-[20vh] md:min-h-[40vh] rounded-xl">
-          {isCreatingPost ? (
-            <PostSkeletonLoader />
-          ) : (
-            <FetchLatestPost onPostClick={handlePostClick} />
-          )}
+          {isCreatingPost ? <PostSkeletonLoader /> : <FetchLatestPost onPostClick={handlePostClick} />}
         </div>
+
         <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
           <div className="flex md:justify-between md:flex-row flex-col">
             <h1 className="text-3xl p-2 font-bold underline">Nearby Posts</h1>
 
             <div className="w-full md:w-1/3 p-3 flex justify-end">
               <div className="relative w-full">
-                <LocateFixedIcon
-                  size={20}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2"
-                />
-                <Input
-                  className="border w-full pl-10"
-                  placeholder="Enter your location"
-                  value={query}
-                  onChange={handleInputChange}
-                />
+                <LocateFixedIcon size={20} className="absolute left-2 top-1/2 transform -translate-y-1/2" />
+                <Input className="border w-full pl-10" placeholder="Enter your location" value={query} onChange={handleInputChange} />
                 {showResults && searchResults.length > 0 && (
                   <ul className="p-3 shadow-md rounded-lg w-full bg-primary/10 mt-2 absolute z-10">
                     {searchResults.map((result: any, index: number) => (
                       <li
                         key={index}
                         className="p-2 cursor-pointer hover:bg-white/80 hover:text-black rounded-xl"
-                        onClick={() =>
-                          handleSelectLocation(
-                            result.geometry.lat,
-                            result.geometry.lng,
-                            result.formatted
-                          )
-                        }
+                        onClick={() => handleSelectLocation(result.geometry.lat, result.geometry.lng, result.formatted)}
                       >
                         {result.formatted}
                       </li>
@@ -140,13 +132,10 @@ const HomePage = () => {
           <FetchPage onPostClick={handlePostClick} />
         </div>
 
+        {/* How to Use This Platform Section */}
         <div className="mt-12 p-6">
-          <h2 className="text-2xl font-bold text-center">
-            How to Use This Platform
-          </h2>
-          <p className="text-gray-600 text-center mt-2">
-            Follow these simple steps to get started!
-          </p>
+          <h2 className="text-2xl font-bold text-center">How to Use This Platform</h2>
+          <p className="text-gray-600 text-center mt-2">Follow these simple steps to get started!</p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-6 mt-6">
             <Card>
@@ -154,36 +143,24 @@ const HomePage = () => {
                 <BookOpen size={28} className="text-primary" />
                 <CardTitle className="ml-3 text-lg">Explore Posts</CardTitle>
               </CardHeader>
-              <CardContent>
-                Browse the latest listings or search for specific locations to
-                find the best housing options.
-              </CardContent>
+              <CardContent>Browse the latest listings or search for specific locations to find the best housing options.</CardContent>
             </Card>
 
-            <Card>
+            {/* This is the card where we will scroll */}
+            <Card ref={lastCardRef}>
               <CardHeader className="flex items-center">
                 <MapPin size={28} className="text-primary" />
-                <CardTitle className="ml-3 text-lg">
-                  Find Nearby Listings
-                </CardTitle>
+                <CardTitle className="ml-3 text-lg">Find Nearby Listings</CardTitle>
               </CardHeader>
-              <CardContent>
-                Use our location search to find available posts near you in
-                real-time.
-              </CardContent>
+              <CardContent>Use our location search to find available posts near you in real-time.</CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex items-center">
                 <Upload size={28} className="text-primary" />
-                <CardTitle className="ml-3 text-lg">
-                  Post Your Listing
-                </CardTitle>
+                <CardTitle className="ml-3 text-lg">Post Your Listing</CardTitle>
               </CardHeader>
-              <CardContent>
-                Easily create and share your housing post with others looking
-                for a place.
-              </CardContent>
+              <CardContent>Easily create and share your housing post with others looking for a place.</CardContent>
             </Card>
           </div>
           <div className="w-full mt-10 max-w-7xl mx-auto">
