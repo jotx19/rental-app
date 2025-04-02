@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { ArrowRight, Home, Settings, User, Sun, Moon } from "lucide-react";
+import { ArrowRight, Home, User, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {

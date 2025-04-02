@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Phone, Mail, MessageCircle, MapPin, MapPlus } from "lucide-react";
+import { ArrowRight, Phone, Mail, MessageCircle, MapPlus } from "lucide-react";
 import { usePostStore } from "@/store/usePostStore";
 
 const calculateDistance = (

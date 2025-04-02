@@ -2,7 +2,6 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";  
 import HomePage from "./Pages/HomePage";
 import ProfilePage from "./Pages/ProfilePage";
-import EditPostPage from "./Pages/EditPostPage";
 import LoginPage from "./Pages/LoginPage";
 import SignUpPage from "./Pages/SignUpPage";
 import { FC, useEffect } from "react";
@@ -46,7 +45,6 @@ const AppContent: FC = () => {
         <Route path="/post-page/:postId" element={<PostPage />} />
         <Route path="/profile" element={<ProfilePage />}/>
         <Route path="/new-post" element={authUser ? <NewPostPage /> : <Navigate to="/login" />} />
-        <Route path="/edit-post" element={authUser ? <EditPostPage /> : <Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/email-verification" element={<EmailVerifyPage />} />
