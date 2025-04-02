@@ -23,18 +23,22 @@ const getDaysAgo = (dateString: string) => {
 const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
   const { getLatestPost } = usePostStore();
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // Keep loading true to show skeletons
 
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
+      setLoading(true); // Ensure loading is true before fetching
       try {
         const fetchedPosts = await getLatestPost();
-        setPosts(typeof fetchedPosts !== 'undefined' ? fetchedPosts : []);
+        if (Array.isArray(fetchedPosts)) {
+          setPosts(fetchedPosts); // Set posts if fetchedPosts is an array
+        } else {
+          setPosts([]); // Otherwise, set to an empty array
+        }
       } catch (error) {
         toast.error('Error fetching latest posts.');
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after fetch
       }
     };
 
