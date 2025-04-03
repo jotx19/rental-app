@@ -91,7 +91,7 @@ const sendMail = async (recipient, subject, otp) => {
             <div class="otp">${otp}</div>
         </div>
         <p>This OTP is valid for 20 minutes.</p>
-        <a href="#" class="cta-button">Verify Now</a>
+        <a href="https://ottawahousing.up.railway.app/" class="cta-button">Verify Now</a>
     </div>
 </body>
 </html>
