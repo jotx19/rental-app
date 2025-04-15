@@ -20,7 +20,7 @@ const HomePage = () => {
     usePostStore();
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const lastCardRef = useRef<HTMLDivElement | null>(null);
+  const faq = useRef<HTMLDivElement | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -44,7 +44,7 @@ const HomePage = () => {
   };
   
   const handleGetStartedClick = () => {
-    lastCardRef.current?.scrollIntoView({ behavior: "smooth" });
+    faq.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -89,8 +89,8 @@ const HomePage = () => {
           )}
         </div>
 
-        <div className="p-0 md:p-6 max-w-5xl mx-auto text-center text-lg font-semibold text-gray-700 mt-6">
-          <h2 className="text-6xl text-primary font-bold mb-4">FAQ</h2>
+        <div ref={faq} className="p-0 md:p-6 max-w-5xl mx-auto text-center text-lg font-semibold text-gray-700 mt-6">
+          <h2 className="text-6xl text-primary mb-4">FAQ</h2>
           <p className="text-xl text-primary md:text-4xl text-center">
             To find accommodation near you, simply <Badge variant='outline' className=" text-xl md:text-4xl bg-[#9B5DE5] text-white rounded-full">enter your address</Badge> 
             Once you type at least<Badge variant='outline' className="text-xl md:text-4xl bg-[#43E97B] text-black rounded-full">3 characters</Badge>, select your address
@@ -100,7 +100,7 @@ const HomePage = () => {
 
         <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
           <div className="flex md:justify-between md:flex-row flex-col">
-            <h1 className="text-3xl p-2 font-bold underline">Nearby Posts</h1>
+            <h1 className="text-3xl p-2 underline">Nearby Posts</h1>
 
             <div className="w-full md:w-1/3 p-3 flex justify-end">
               <div className="relative w-full">
