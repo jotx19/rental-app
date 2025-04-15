@@ -73,7 +73,7 @@ const PostPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center mt-10 min-h-screen md:p-6 p-2 pb-20">
-      <div className="w-full max-w-7xl rounded-lg p-6">
+      <div className="w-full max-w-7xl rounded-lg">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0 w-full md:w-1/2">
             <img
@@ -164,7 +164,7 @@ const PostPage = () => {
         </div>
       </div>
 
-      <footer className="fixed bottom-0 gap-2 left-0 w-full shadow-md border-t p-4 flex justify-end items-center">
+      <footer className="fixed bg-[#141413] bottom-0 gap-2 left-0 w-full shadow-md border-t p-4 flex justify-end items-center">
         <p className="text-md">Posted by:</p>
         <Link
           to={`/user/${post.user?._id}`}
