@@ -14,14 +14,14 @@ const Navbar = () => {
   }, [theme]);
 
   return (
-    <header className="font-custom text-white rounded-2xl fixed border top-2 left-1/2 transform -translate-x-1/2 w-[80vw] z-20 backdrop-blur-lg bg-base-100/80">
-      <div className="container mx-auto px-3 h-14 flex items-center justify-between">
+    <header className="font-custom text-white border-b-[1px] fixed top-0 left-1/2 transform -translate-x-1/2 w-full z-20 backdrop-blur-lg bg-base-100/80">
+      <div className="container h-16 px-3 mx-auto flex items-center justify-between">
         <Link
           to="/"
           className="flex items-center gap-2.5 hover:opacity-80 transition-all"
         >
           <div className="size-9 rounded-lg flex items-center justify-center">
-            <Home className="w-5 h-5 text-primary" />
+            <Home className="size-6 text-primary" />
           </div>
         </Link>
 
@@ -40,10 +40,10 @@ const Navbar = () => {
               </Link>
 
               <button
-                className="flex items-center p-1.5 rounded-lg bg-[#D2F488] text-black hover:bg-[#ff91e7] hover:scale-105 border-transparent"
+                className="flex items-center p-1.5 rounded-xl bg-[#D2F488] text-black hover:bg-[#ff91e7] hover:scale-105 border-transparent"
                 onClick={logout}
               >
-                <span>Logout</span>
+                <span className="md:text-xl text-md p-1">Logout</span>
                 <ArrowRight className="size-5 -rotate-45" />
               </button>
             </>

@@ -33,7 +33,6 @@ interface PostState {
     getAllPosts: (userId: string) => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
-    getLatestPosts: (searchTerm: string, priceRange: string | null, postType: string | null) => Promise<any[]>;
     getLocationFromCoordinates: (coordinates: [number, number]) => void;
     setSelectedPost: (post: any | null) => void;
     deletePost: (postId: string) => Promise<void>;
@@ -176,32 +175,6 @@ export const usePostStore = create<PostState>((set, get) => ({
             }
         }
     },
-    
-    getLatestPosts:  async (searchTerm: string, priceRange: string | null, postType: string | null) => {
-    try {
-      const params: Record<string, any> = {};
-      if (searchTerm) params.search = searchTerm;
-      if (priceRange) params.priceRange = priceRange;
-      if (postType) params.type = postType;
-  
-      const res = await axiosInstance.get("/post/latest-post", { params });
-  
-      if (res.data.posts) {
-        return res.data.posts;
-      }
-      return [];
-    } catch (error: AxiosError | any) {
-      if (error.response) {
-        toast.error(error.response.data.message);
-      } else if (error.request) {
-        toast.error("Network error. Please try again later.");
-      } else {
-        toast.error("An error occurred. Please try again later.");
-      }
-      return [];
-    }
-  },
-  
 
     getAllPosts: async (authUser: any) => {
         set({ isFetchingPosts: true });

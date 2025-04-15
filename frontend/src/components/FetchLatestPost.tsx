@@ -51,7 +51,7 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
         ? Array(8)
             .fill(null)
             .map((_, index) => (
-              <div key={index} className="p-2 border rounded-md shadow-md">
+              <div key={index} className="p-2 border rounded-md">
                 <Skeleton className="w-full aspect-[16/9] mb-2 rounded-md" />
                 <Skeleton className="w-3/4 h-4 mb-1" />
                 <Skeleton className="w-1/2 h-3" />
@@ -60,7 +60,7 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
         : posts.map((post) => (
             <div
               key={post._id}
-              className="p-2 border transform transition-transform duration-300 hover:scale-105 rounded-md shadow-md flex flex-col justify-between relative"
+              className="p-2 border transform transition-transform duration-300 hover:scale-105 rounded-md flex flex-col justify-between relative"
               onClick={() => onPostClick(post)}
             >
               <div className="w-full aspect-[16/9] overflow-hidden rounded-md relative">

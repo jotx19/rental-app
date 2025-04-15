@@ -195,7 +195,7 @@ const NewPostPage = () => {
                     <li key={result.formatted}>
                       <div
                         onClick={() => handleAddressSelect(result.geometry.lat, result.geometry.lng, result.formatted)}
-                        className="p-2 cursor-pointer hover:bg-white/80 hover:text-black text-black rounded-xl"
+                        className="p-2 cursor-pointer hover:bg-white/80 hover:text-black text-white rounded-xl"
                       >
                         {result.formatted}
                       </div>
@@ -231,7 +231,7 @@ const NewPostPage = () => {
               type="submit"
               disabled={loading}
               className={`px-15 py-2 font-semibold text-sm rounded-md transition-all ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-white hover:text-[#5AF2A6] hover:bg-[#001F10] text-black"
+                loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#5AF2A6] hover:text-[#5AF2A6] hover:bg-[#001F10] text-black"
               }`}
             >
               {loading ? "Creating..." : "Create Post"}

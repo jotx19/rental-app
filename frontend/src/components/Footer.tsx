@@ -3,7 +3,7 @@ import { Facebook, Twitter, Linkedin, Instagram, ArrowRight } from "lucide-react
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 rounded-2xl text-white py-10">
+    <footer className="bg-[#141413] rounded-2xl text-white py-10">
       <div className="container mx-auto px-6 lg:px-20">
         <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-700 pb-6">
           
