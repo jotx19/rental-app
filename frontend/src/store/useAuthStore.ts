@@ -9,7 +9,6 @@ interface authUser {
     name: string;
     email: string;
     verified: boolean;
-    token: string; // Add the token property
 }
 
 interface AuthState {
@@ -49,19 +48,9 @@ export const useAuthStore = create<AuthState>((set) => {
 
         checkAuth: async () => {
             try {
-                const token = Cookies.get('myToken');
-                if (!token) {
-                    set({ authUser: null });
-                    return;
-                }
-
-                const res = await axiosInstance.get<authUser>("/auth/check", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
+                const res = await axiosInstance.get<authUser>("/auth/check");
                 set({ authUser: res.data });
-                Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 });
+                Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 }); // Set cookie for 7 days
             } catch (error) {
                 set({ authUser: null });
                 Cookies.remove('authUser');
@@ -77,7 +66,6 @@ export const useAuthStore = create<AuthState>((set) => {
                 toast.success("Account created successfully");
                 set({ authUser: res.data });
                 Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 });
-                Cookies.set('myToken', res.data.token, { expires: 7 }); // Store the token
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
@@ -98,7 +86,6 @@ export const useAuthStore = create<AuthState>((set) => {
                 toast.success("Logged in successfully");
                 set({ authUser: res.data });
                 Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 });
-                Cookies.set('myToken', res.data.token, { expires: 7 }); // Store the token
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
@@ -150,7 +137,6 @@ export const useAuthStore = create<AuthState>((set) => {
                 await axiosInstance.post("/auth/logout");
                 set({ authUser: null });
                 Cookies.remove('authUser');
-                Cookies.remove('myToken'); // Remove the token
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
