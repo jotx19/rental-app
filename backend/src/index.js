@@ -28,9 +28,9 @@ app.use(
     credentials: true,
 })
 );
-app.use("/", (req, res) => {
-    res.send("Hello from server");
-});
+// app.use("/", (req, res) => {
+//     res.send("Hello from server");
+// });
 app.use("/api/auth", authRoute);
 app.use("/api/post", postRoute);
 
