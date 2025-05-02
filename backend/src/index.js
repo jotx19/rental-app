@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(
     cors({
     origin: "https://othousing.vercel.app",
-    credentials: 'include',
+    credentials: true,
 })
 );
 // app.use("/", (req, res) => {
