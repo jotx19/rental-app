@@ -2,6 +2,7 @@ import { axiosInstance } from '@/lib/axios';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 import { AxiosError } from 'axios';
+import Cookies from 'js-cookie';
 
 interface authUser {
     _id: string;
@@ -33,7 +34,7 @@ interface SignupData {
 }
 
 export const useAuthStore = create<AuthState>((set) => {
-    const storedUser = localStorage.getItem("authUser");
+    const storedUser = Cookies.get('authUser');
     const authUser = storedUser ? JSON.parse(storedUser) : null;
 
     return {
@@ -49,10 +50,10 @@ export const useAuthStore = create<AuthState>((set) => {
             try {
                 const res = await axiosInstance.get<authUser>("/auth/check");
                 set({ authUser: res.data });
-                localStorage.setItem("authUser", JSON.stringify(res.data));
+                Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 }); // Set cookie for 7 days
             } catch (error) {
                 set({ authUser: null });
-                localStorage.removeItem("authUser");
+                Cookies.remove('authUser');
             } finally {
                 set({ isCheckingAuth: false });
             }
@@ -64,7 +65,7 @@ export const useAuthStore = create<AuthState>((set) => {
                 const res = await axiosInstance.post<authUser>("/auth/signup", data);
                 toast.success("Account created successfully");
                 set({ authUser: res.data });
-                localStorage.setItem("authUser", JSON.stringify(res.data));
+                Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 });
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
@@ -84,7 +85,7 @@ export const useAuthStore = create<AuthState>((set) => {
                 const res = await axiosInstance.post<authUser>("/auth/login", data);
                 toast.success("Logged in successfully");
                 set({ authUser: res.data });
-                localStorage.setItem("authUser", JSON.stringify(res.data));
+                Cookies.set('authUser', JSON.stringify(res.data), { expires: 7 });
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
@@ -103,7 +104,7 @@ export const useAuthStore = create<AuthState>((set) => {
                 const res = await axiosInstance.post("/auth/verify-otp", { email, otp });
                 toast.success(res.data.message);
                 set({ authUser: res.data.user });
-                localStorage.setItem("authUser", JSON.stringify(res.data.user));
+                Cookies.set('authUser', JSON.stringify(res.data.user), { expires: 7 });
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
@@ -135,7 +136,7 @@ export const useAuthStore = create<AuthState>((set) => {
             try {
                 await axiosInstance.post("/auth/logout");
                 set({ authUser: null });
-                localStorage.removeItem("authUser");
+                Cookies.remove('authUser');
             } catch (error: unknown) {
                 const axiosError = error as AxiosError;
                 if (axiosError.response) {
