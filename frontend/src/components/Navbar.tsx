@@ -2,16 +2,33 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { ArrowRight, Home, User, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePostStore } from "../store/usePostStore"; // Assuming you have this store
 
 const Navbar = () => {
   const authUser = useAuthStore((state) => state.authUser);
   const logout = useAuthStore((state) => state.logout);
+  const { getLatestPost } = usePostStore();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  const [isServerOnline, setIsServerOnline] = useState(false); // State for server status
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    // Check if the server is online by fetching the latest post
+    const checkServerStatus = async () => {
+      const posts = await getLatestPost();
+      if (Array.isArray(posts) && posts.length > 0) {
+        setIsServerOnline(true); // Set server status to online
+      } else {
+        setIsServerOnline(false); // Set server status to offline
+      }
+    };
+
+    checkServerStatus(); // Check server status when component mounts
+  }, [getLatestPost]);
 
   return (
     <header className="font-custom text-white border-b-[1px] fixed top-0 left-1/2 transform -translate-x-1/2 w-full z-20 backdrop-blur-lg bg-base-100/80">
@@ -26,19 +43,17 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-1">
-
           <div className="flex items-center gap-2 border rounded-full px-3">
-            <span className="text-[15px] font-bold text-primary ">Server</span>
-
+            <span className="text-[15px] text-primary ">Server</span>
             <span className="relative flex h-2 w-2">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
-                  authUser ? "bg-green-500" : "bg-red-500"
+                  isServerOnline ? "bg-green-500" : "bg-red-500"
                 } opacity-75`}
               ></span>
               <span
                 className={`relative inline-flex rounded-full h-2 w-2 ${
-                  authUser ? "bg-green-500" : "bg-red-500"
+                  isServerOnline ? "bg-green-500" : "bg-red-500"
                 }`}
               ></span>
             </span>
