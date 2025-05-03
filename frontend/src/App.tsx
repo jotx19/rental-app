@@ -1,7 +1,6 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";  
 import { FC, useEffect } from "react";
-import { Loader } from "lucide-react";
 
 import HomePage from "./Pages/HomePage";
 import ProfilePage from "./Pages/ProfilePage";
@@ -17,7 +16,7 @@ import Navbar from "./components/Navbar";
 import { useAuthStore } from "./store/useAuthStore";
 
 const AppContent: FC = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth } = useAuthStore();
   const location = useLocation();
 
   useEffect(() => {
