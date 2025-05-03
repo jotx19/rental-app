@@ -15,7 +15,6 @@ import SearchPage from "./Pages/SearchPage";
 import About from "./components/Sider/about";
 import Navbar from "./components/Navbar";
 import { useAuthStore } from "./store/useAuthStore";
-import { Toaster } from "@/components/ui/sonner";
 
 const AppContent: FC = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
