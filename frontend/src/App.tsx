@@ -24,13 +24,13 @@ const AppContent: FC = () => {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth && !authUser) {
-    return (
-      <div className="flex h-screen justify-center items-center">
-        <Loader className="size-10 text-white animate-spin" />
-      </div>
-    );
-  }
+  // if (isCheckingAuth && !authUser) {
+  //   return (
+  //     <div className="flex h-screen justify-center items-center">
+  //       <Loader className="size-10 text-white animate-spin" />
+  //     </div>
+  //   );
+  // }
 
   const hideNavbarRoutes = ["/login", "/signup"];
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);

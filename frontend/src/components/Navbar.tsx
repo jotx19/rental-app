@@ -25,32 +25,57 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+
+          <div className="flex items-center gap-2 border rounded-full px-3">
+            <span className="text-[15px] font-bold text-primary ">Server</span>
+
+            <span className="relative flex h-2 w-2">
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
+                  authUser ? "bg-green-500" : "bg-red-500"
+                } opacity-75`}
+              ></span>
+              <span
+                className={`relative inline-flex rounded-full h-2 w-2 ${
+                  authUser ? "bg-green-500" : "bg-red-500"
+                }`}
+              ></span>
+            </span>
+          </div>
+
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="p-2 rounded-lg hover:bg-gray-200 text-primary hover:text-black"
           >
-            {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+            {theme === "dark" ? (
+              <Sun className="size-4" />
+            ) : (
+              <Moon className="size-4" />
+            )}
           </button>
 
           {authUser ? (
             <>
-              <Link to="/profile" className="btn btn-sm p-2 text-primary rounded-lg hover:bg-gray-200 hover:text-black flex items-center">
-                <User className="size-5 " />
+              <Link
+                to="/profile"
+                className="btn btn-sm p-2 text-primary rounded-lg hover:bg-gray-200 hover:text-black flex items-center"
+              >
+                <User className="size-4 " />
               </Link>
 
               <button
-                className="flex items-center p-1.5 rounded-xl bg-[#D2F488] text-black hover:bg-[#ff91e7] hover:scale-105 border-transparent"
+                className="flex items-center p-1 px-2 rounded-xl bg-[#D2F488] text-black hover:bg-[#ff91e7] hover:scale-105 border-transparent"
                 onClick={logout}
               >
-                <span className="md:text-xl text-md p-1">Logout</span>
+                <span className="">Logout</span>
                 <ArrowRight className="size-5 -rotate-45" />
               </button>
             </>
           ) : (
             <Link
               to="/login"
-              className="flex items-center p-1.5 border-white rounded-lg bg-white text-black hover:bg-[#ff91e7] hover:scale-105 hover:border-white"
+              className="flex items-center p-1 px-2 border-white rounded-lg bg-white text-black hover:bg-[#ff91e7] hover:scale-105 hover:border-white"
             >
               <span>Login</span>
             </Link>
