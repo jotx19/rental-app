@@ -23,14 +23,11 @@ app.listen(process.env.PORT, ()=>{
 app.use(express.json());
 app.use(cookieParser());
 app.use(
-    cors({
-    origin: "https://othousing.vercel.app",
+  cors({
+    origin: ["https://othousing.vercel.app", "http://localhost:5173"],
     credentials: true,
-})
+  })
 );
-// app.use("/", (req, res) => {
-//     res.send("Hello from server");
-// });
 app.use("/api/auth", authRoute);
 app.use("/api/post", postRoute);
 

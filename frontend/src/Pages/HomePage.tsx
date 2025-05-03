@@ -48,9 +48,9 @@ const HomePage = () => {
   };
 
   return (
-    <div className="relative p-3 mt-12 flex flex-col">
+    <div className="relative p-3 top-10 mt-12 flex flex-col">
       <div className="">
-        <div className="flex flex-col gap-1 items-center justify-center text-center mt-10">
+        <div className="flex flex-col gap-1 items-center justify-center text-center">
           <div className="border-primary border-[1px] rounded-full px-1">
             Swipe down for more
           </div>
