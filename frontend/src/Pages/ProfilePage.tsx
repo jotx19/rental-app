@@ -58,10 +58,6 @@ const ProfilePage = () => {
           <div className="flex flex-col">
             <h2 className="text-xl font-semibold">{authUser.name}</h2>
             <p className="text-gray-500 text-sm">{authUser.email}</p>
-
-            <div className="mt-3 flex gap-3">
-              <Button variant="outline">Edit Profile</Button>
-            </div>
           </div>
         </div>
 

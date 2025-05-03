@@ -80,7 +80,7 @@ const HomePage = () => {
       
 
       <div className="flex gap-2 flex-col md:py-3 py-3">
-        <h1 className="md:text-3xl justify-center text-center font-sans p-2 uppercase">Recently Uploaded Post</h1>
+        <h1 className="md:text-3xl  justify-center text-center font-sans p-2 uppercase">Recently Uploaded Post</h1>
         <div className="min-h-[20vh] md:min-h-[40vh] rounded-xl">
           {isCreatingPost ? (
             <PostSkeletonLoader />
