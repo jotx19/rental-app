@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";  
 import { FC } from "react";
+import { Toaster } from "sonner";
 
 import HomePage from "./Pages/HomePage";
 import ProfilePage from "./Pages/ProfilePage";
@@ -18,7 +19,7 @@ import { useAuthStore } from "./store/useAuthStore";
 useAuthStore.getState().checkAuth();
 
 const AppContent: FC = () => {
-  const { authUser } = useAuthStore();
+  const authUser = useAuthStore((state) => state.authUser);
   const location = useLocation();
 
   // useEffect(() => {
@@ -60,6 +61,7 @@ const App: FC = () => {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Router>
         <AppContent />
+        <Toaster position="bottom-right"/>
       </Router>
     </ThemeProvider>
   );

@@ -102,9 +102,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (axiosError.response) {
         const errorMessage = (axiosError.response?.data as { message: string })
           ?.message;
-        toast.error(errorMessage);
+        toast.success(errorMessage);
+        throw new Error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
+        throw new Error("Network error. Please try again.");
       }
     }
   },

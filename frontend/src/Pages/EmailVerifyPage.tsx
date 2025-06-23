@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Router, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '../store/useAuthStore';
 import { Loader, Mail } from 'lucide-react';
@@ -46,6 +46,7 @@ const EmailVerifyPage = () => {
             await verify(email, userOtp);
             navigate('/');
         } catch (error) {
+            toast.error('Invalid OTP. Please try again.');
             console.error('Error verifying OTP:', error);
         } finally {
             setVerifying(false);
