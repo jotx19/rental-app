@@ -1,29 +1,29 @@
-import { axiosInstance } from '@/lib/axios';
-import {toast} from 'sonner';
-import { create } from 'zustand';
-import { AxiosError } from 'axios';
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "sonner";
+import { create } from "zustand";
+import { AxiosError } from "axios";
 
 interface authUser {
-    _id: string;       
-    name: string;     
-    email: string;    
-    verified: boolean; 
+  _id: string;
+  name: string;
+  email: string;
+  verified: boolean;
 }
 
 interface AuthState {
-    authUser: authUser | null;
-    isSigningUp: boolean;
-    isLoggingIn: boolean;
-    isUpdatingProfile: boolean;
-    isCheckingAuth: boolean;
-    isSendingEmailVerification: boolean;  
-    emailVerificationSent: boolean; 
-    checkAuth: () => Promise<void>;
-    signup: (data: SignupData) => Promise<void>;
-    verify: (email: string, otp: string) => Promise<void>;
-    login: (credentials: { email: string; password: string }) => Promise<void>;
-    sendEmailVerification: (email: string) => Promise<void>; 
-    logout: () => void;
+  authUser: authUser | null;
+  isSigningUp: boolean;
+  isLoggingIn: boolean;
+  isUpdatingProfile: boolean;
+  isCheckingAuth: boolean;
+  isSendingEmailVerification: boolean;
+  emailVerificationSent: boolean;
+  checkAuth: () => Promise<void>;
+  signup: (data: SignupData) => Promise<void>;
+  verify: (email: string, otp: string) => Promise<void>;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
+  sendEmailVerification: (email: string) => Promise<void>;
+  logout: () => void;
 }
 
 interface SignupData {
@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isCheckingAuth: true,
   isSendingEmailVerification: false,
   emailVerificationSent: false,
-  
+
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get<authUser>("/auth/check");
@@ -61,7 +61,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        const errorMessage = (axiosError.response?.data as { message: string })
+          ?.message;
         toast.error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
@@ -80,7 +81,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        const errorMessage = (axiosError.response?.data as { message: string })
+          ?.message;
         toast.error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
@@ -98,7 +100,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        const errorMessage = (axiosError.response?.data as { message: string })
+          ?.message;
         toast.error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
@@ -108,13 +111,16 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   sendEmailVerification: async (email: string) => {
     try {
-      const res = await axiosInstance.post("/auth/email-verification", { email });
+      const res = await axiosInstance.post("/auth/email-verification", {
+        email,
+      });
       toast.success(res.data.message);
       set({ emailVerificationSent: true });
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        const errorMessage = (axiosError.response?.data as { message: string })
+          ?.message;
         toast.error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
@@ -122,18 +128,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: async()=>{
+  logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })?.message;
+        const errorMessage = (axiosError.response?.data as { message: string })
+          ?.message;
         toast.error(errorMessage);
       } else {
         toast.error("Network error. Please try again.");
       }
     }
-  }
+  },
 }));

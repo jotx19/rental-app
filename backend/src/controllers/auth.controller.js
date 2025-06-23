@@ -51,7 +51,15 @@ export const verifyOtp = async (req, res) => {
         await user.save();
 
         const token = generateToken(user._id, res);
-        res.json({ message: "OTP verified successfully" });
+        res.json({
+            message: "OTP verified successfully",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                verified: user.verified
+            }
+        });
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
@@ -129,6 +137,7 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
     res.clearCookie("myToken", {
+        maxAge: 0,
         httpOnly: true,
         sameSite: 'None',
         secure: true,
