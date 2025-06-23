@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";  
-import { FC, useEffect } from "react";
+import { FC } from "react";
 
 import HomePage from "./Pages/HomePage";
 import ProfilePage from "./Pages/ProfilePage";
@@ -15,13 +15,15 @@ import About from "./components/Sider/about";
 import Navbar from "./components/Navbar";
 import { useAuthStore } from "./store/useAuthStore";
 
+useAuthStore.getState().checkAuth();
+
 const AppContent: FC = () => {
-  const { authUser, checkAuth } = useAuthStore();
+  const { authUser } = useAuthStore();
   const location = useLocation();
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  // useEffect(() => {
+  //   checkAuth();
+  // }, [checkAuth]);
 
   // if (isCheckingAuth && !authUser) {
   //   return (
