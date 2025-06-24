@@ -110,7 +110,7 @@ const HomePage = () => {
                 />
                 <Input
                   className="border w-full pl-10"
-                  placeholder="Enter your location"
+                  placeholder="Enter your location (10km)"
                   value={query}
                   onChange={handleInputChange}
                 />

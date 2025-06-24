@@ -4,24 +4,70 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { usePostStore } from '@/store/usePostStore';
 
-
 interface FetchPageProps {
   onPostClick: (post: any) => void;
 }
+const calculateDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number => {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
 
 const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
-  const { currentLocation, getNearbyPosts } = usePostStore();
+  const {
+    currentLocation,
+    getNearbyPosts,
+    getCurrentLocation,
+  } = usePostStore();
+
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!currentLocation) return;
+    if (!currentLocation) {
+      getCurrentLocation();
+      return;
+    }
 
     const fetchPosts = async () => {
       setLoading(true);
       try {
         const fetchedPosts = await getNearbyPosts();
-        setPosts(Array.isArray(fetchedPosts) ? fetchedPosts : []);
+
+        const postsWithDistance = (Array.isArray(fetchedPosts) ? fetchedPosts : []).map((post: any) => {
+          if (
+            post?.location?.coordinates &&
+            currentLocation?.latitude &&
+            currentLocation?.longitude
+          ) {
+            const [postLon, postLat] = post.location.coordinates;
+            const distance = calculateDistance(
+              currentLocation.latitude,
+              currentLocation.longitude,
+              postLat,
+              postLon
+            );
+            return { ...post, distance };
+          }
+          return post;
+        });
+
+        setPosts(postsWithDistance);
       } catch (error) {
         toast.error('Error fetching posts.');
       } finally {
@@ -30,7 +76,7 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
     };
 
     fetchPosts();
-  }, [currentLocation, getNearbyPosts]);
+  }, [currentLocation, getNearbyPosts, getCurrentLocation]);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -49,7 +95,7 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
           <div
             key={post._id}
             className="p-2 border rounded-md shadow-md flex flex-col justify-between relative"
-            onClick={() => onPostClick(post)} // Handle post click for navigation
+            onClick={() => onPostClick(post)}
           >
             <div className="w-full aspect-[16/9] overflow-hidden rounded-md relative">
               {post.image ? (
@@ -61,17 +107,13 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
               ) : (
                 <div className="w-full h-full bg-primary/10" />
               )}
-
             </div>
-
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
               {post.description}
             </h3>
-
             <p className="text-xs font-bold border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
               ${post.price}
             </p>
-
             <div className="flex flex-wrap gap-1 mt-1">
               {post.utilities.slice(0, 1).map((utility: string, index: number) => (
                 <Badge
@@ -82,7 +124,6 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
                   {utility}
                 </Badge>
               ))}
-              {/* showing only a few for mobile screen */}
               <div className="hidden sm:flex flex-wrap gap-1 mt-1">
                 {post.utilities.slice(1).map((utility: string, index: number) => (
                   <Badge
@@ -95,7 +136,6 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
                 ))}
               </div>
             </div>
-
             <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
               {post.distance !== undefined
                 ? `${post.distance.toFixed(2)} km away`

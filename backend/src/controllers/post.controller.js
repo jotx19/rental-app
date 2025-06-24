@@ -121,7 +121,7 @@ export const editPost = async (req, res) => {
 };
 
 export const getNearbyPosts = async (req, res) => {
-    const { latitude, longitude, radius = 100 } = req.query;
+    const { latitude, longitude, radius = 10 } = req.query;
 
     if (!latitude || !longitude) {
         return res.status(400).json({ message: "Latitude and Longitude are required" });

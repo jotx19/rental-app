@@ -201,12 +201,12 @@ export const usePostStore = create<PostState>((set, get) => ({
     },
 
     getLocationFromCoordinates: async (coordinates: [number, number]) => {
-        const [lon, lat] = coordinates; // Destructure in the correct order (longitude, latitude)
+        const [lon, lat] = coordinates;
         
         try {
             const res = await axios.get(OPEN_CAGE_API_URL, {
                 params: {
-                    q: `${lat},${lon}`,  // Use lat and lon for the geocode API request
+                    q: `${lat},${lon}`, 
                     key: OPEN_CAGE_API_KEY,
                     no_annotations: 1,
                     limit: 1,
@@ -215,8 +215,8 @@ export const usePostStore = create<PostState>((set, get) => ({
     
             const locationData = res.data.results[0];
             if (locationData) {
-                const locationName = locationData.formatted; // Full address
-                const address = locationData.components; // Breakdown of address
+                const locationName = locationData.formatted;
+                const address = locationData.components; 
                 set({
                     locationName,
                     locationAddress: `${address.road || ''}, ${address.city || ''}, ${address.state || ''}, ${address.country || ''}`,
@@ -231,7 +231,7 @@ export const usePostStore = create<PostState>((set, get) => ({
     },
     deletePost: async (postId: string) => {
         try {
-            const res = await axiosInstance.delete(`/post/${postId}/delete-post`); // Assuming the endpoint is '/post/:id'
+            const res = await axiosInstance.delete(`/post/${postId}/delete-post`);
             if (res.status === 200) {
                 toast.success("Post deleted successfully");
                 set((state) => ({
