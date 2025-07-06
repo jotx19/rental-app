@@ -70,7 +70,7 @@ const EmailVerifyPage = () => {
         <div className="flex items-center justify-center min-h-screen py-10 px-4">
             <div className="w-full max-w-md px-6 py-8 rounded-lg">
                 <div className="text-center mb-6">
-                    <h1 className="text-4xl font-bold">Login to Housing</h1>
+                    <h1 className="text-4xl">Login to Housing</h1>
                 </div>
 
                 {!otpSent ? (
