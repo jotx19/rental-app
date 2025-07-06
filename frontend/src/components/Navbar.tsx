@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { ArrowRight, Home, User, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePostStore } from "../store/usePostStore"; // Assuming you have this store
+import { usePostStore } from "../store/usePostStore";
 
 const Navbar = () => {
   const authUser = useAuthStore((state) => state.authUser);
   const logout = useAuthStore((state) => state.logout);
   const { getLatestPost } = usePostStore();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
-  const [isServerOnline, setIsServerOnline] = useState(false); // State for server status
+  const [isServerOnline, setIsServerOnline] = useState(false); 
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -17,17 +17,15 @@ const Navbar = () => {
   }, [theme]);
 
   useEffect(() => {
-    // Check if the server is online by fetching the latest post
     const checkServerStatus = async () => {
       const posts = await getLatestPost();
       if (Array.isArray(posts) && posts.length > 0) {
-        setIsServerOnline(true); // Set server status to online
+        setIsServerOnline(true);
       } else {
-        setIsServerOnline(false); // Set server status to offline
+        setIsServerOnline(false); 
       }
     };
-
-    checkServerStatus(); // Check server status when component mounts
+    checkServerStatus();
   }, [getLatestPost]);
 
   return (

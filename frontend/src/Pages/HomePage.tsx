@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   LocateFixedIcon,
   ArrowDown,
+  Search,
 } from "lucide-react";
 import { usePostStore } from "@/store/usePostStore";
 import FetchLatestPost from "@/components/FetchLatestPost";
@@ -44,7 +45,7 @@ const HomePage = () => {
   };
   
   const handleGetStartedClick = () => {
-    faq.current?.scrollIntoView({ behavior: "smooth" });
+    navigate("/search");
   };
 
   return (
@@ -73,7 +74,8 @@ const HomePage = () => {
         </div>
         <div>
           <Button className="text-primary" variant='outline' onClick={handleGetStartedClick}>
-            Get Started
+            Explore
+          <Search size={20} />
           </Button>
         </div>
       </div>
@@ -89,7 +91,7 @@ const HomePage = () => {
           )}
         </div>
 
-        <div ref={faq} className="p-0 md:p-6 max-w-5xl mx-auto text-center text-lg font-semibold text-gray-700 mt-6">
+        <div ref={faq} className="p-0 md:p-6 max-w-5xl mx-auto text-center text-lg text-gray-700 mt-6">
           <h2 className="text-6xl text-primary mb-4">FAQ</h2>
           <p className="text-xl text-primary md:text-4xl text-center">
             To find accommodation near you, simply <Badge variant='outline' className=" text-xl md:text-4xl bg-[#9B5DE5] text-white rounded-full">enter your address</Badge> 

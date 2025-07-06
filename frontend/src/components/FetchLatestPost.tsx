@@ -19,7 +19,12 @@ const getDaysAgo = (dateString: string) => {
   return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
 };
 
-const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
+const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
+  onPostClick,
+  searchTerm = '',
+  priceRange = null,
+  postType = null,
+}) => {
   const { getLatestPost } = usePostStore();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,23 +50,55 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({ onPostClick }) => {
     fetchPosts();
   }, [getLatestPost]);
 
-  if (loading || posts.length === 0) {
+  // 🧠 Filtering logic
+  const filteredPosts = posts.filter((post) => {
+    // Text search
+    const matchesSearch = post.description
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    // Type filter
+    const matchesType = postType ? post.type === postType : true;
+
+    // Price filter
+    let matchesPrice = true;
+    if (priceRange) {
+      let min = 0;
+      let max = Infinity;
+
+      if (priceRange.includes('+')) {
+        min = parseInt(priceRange);
+      } else {
+        const [minStr, maxStr] = priceRange.split('-');
+        min = parseInt(minStr);
+        max = parseInt(maxStr);
+      }
+
+      matchesPrice = post.price >= min && post.price <= max;
+    }
+
+    return matchesSearch && matchesType && matchesPrice;
+  });
+
+  if (loading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {Array(8).fill(null).map((_, index) => (
-          <div key={index} className="p-2 border rounded-md">
-            <Skeleton className="w-full aspect-[16/9] mb-2 rounded-md" />
-            <Skeleton className="w-3/4 h-4 mb-1" />
-            <Skeleton className="w-1/2 h-3" />
-          </div>
-        ))}
+        {Array(8)
+          .fill(null)
+          .map((_, index) => (
+            <div key={index} className="p-2 border rounded-md">
+              <Skeleton className="w-full aspect-[16/9] mb-2 rounded-md" />
+              <Skeleton className="w-3/4 h-4 mb-1" />
+              <Skeleton className="w-1/2 h-3" />
+            </div>
+          ))}
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-      {posts.map((post) => (
+      {filteredPosts.map((post) => (
         <div
           key={post._id}
           className="p-2 border transform transition-transform duration-300 hover:scale-105 rounded-md flex flex-col justify-between relative"
