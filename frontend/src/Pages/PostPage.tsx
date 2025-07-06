@@ -84,10 +84,10 @@ const PostPage = () => {
           </div>
 
           <div className="flex flex-col gap-3 md:w-1/2 p-6">
-            <p className="text-3xl font-semibold">{post.description}</p>
+            <p className="text-3xl">{post.description}</p>
 
             <div className="flex items-center gap-4 mt-3">
-              <Badge variant="destructive" className="text-2xl font-bold">
+              <Badge variant="destructive" className="text-2xl">
                 {post.price ? `$${post.price}` : "Price Not Available"}
               </Badge>
             </div>
