@@ -6,6 +6,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import FetchLatestPost from "@/components/FetchLatestPost";
+import { ListFilterPlus } from "lucide-react";
 
 const SearchPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,11 +41,12 @@ const SearchPage = () => {
         />
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
           <DrawerTrigger asChild>
-            <Button variant="outline" className="px-4">Filters</Button>
+            {/* <Button variant="outline" className="px-4">Filters</Button> */}
+            <ListFilterPlus className="border rounded-md p-2 h-9 w-9" />
           </DrawerTrigger>
           <DrawerContent className="p-4 flex justify-center items-center">
             <div className="w-full flex flex-col max-w-3xl">
-              <h2 className="text-lg font-semibold mb-4">Filter Posts</h2>
+              <h2 className="text-lg mx-auto mb-4"></h2>
 
               <div className="flex flex-row gap-7">
               <div className="mb-8">
@@ -85,9 +87,8 @@ const SearchPage = () => {
       </div>
 
       <div className="mt-6 max-w-6xl mx-auto w-full">
-        <h2 className="text-xl font-semibold text-center">Posts</h2>
+        <h2 className="text-xl text-center">Posts</h2>
         <div className="mt-4 flex flex-col gap-4">
-          {/* Pass the filter criteria as props to FetchLatestPost */}
           <FetchLatestPost
             onPostClick={handlePostClick}
             searchTerm={searchTerm}

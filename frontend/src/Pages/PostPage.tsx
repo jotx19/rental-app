@@ -72,14 +72,14 @@ const PostPage = () => {
   if (!post) return "Post not found";
 
   return (
-    <div className="flex flex-col items-center justify-center mt-16 min-h-screen md:p-6 p-2 pb-20">
+    <div className="flex flex-col items-center justify-center min-h-screen md:p-6 p-2 pb-20">
       <div className="w-full max-w-7xl rounded-lg">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0 w-full md:w-1/2">
             <img
               src={post.image || "/placeholder.jpg"}
               alt={post.description}
-              className="w-full h-auto object-contain rounded-lg"
+              className="w-full h-auto md:h-80 object-cover rounded-lg"
             />
           </div>
 
@@ -108,7 +108,7 @@ const PostPage = () => {
             </div>
 
             <div className="mt-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 md:max-w-[80vw] truncate">
                 <Badge variant="outline" className="text-sm">
                   {locationName}
                 </Badge>
