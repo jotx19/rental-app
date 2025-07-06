@@ -88,7 +88,7 @@ const SearchPage = () => {
 
       <div className="mt-6 max-w-6xl mx-auto w-full">
         <h2 className="text-xl text-center">Posts</h2>
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="p-2">
           <FetchLatestPost
             onPostClick={handlePostClick}
             searchTerm={searchTerm}
