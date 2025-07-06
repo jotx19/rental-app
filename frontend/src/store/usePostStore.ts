@@ -85,7 +85,7 @@ export const usePostStore = create<PostState>((set, get) => ({
                     toast.success("Location fetched successfully");
                 },
                 () => {
-                    toast.error("Unable to retrieve location. Please try again later.");
+                    toast.error("Unable to retrieve location.");
                     set({
                         currentLocation: null,
                         isCurrentLocation: false,

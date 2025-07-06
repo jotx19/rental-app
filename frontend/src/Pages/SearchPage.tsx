@@ -14,13 +14,20 @@ import FetchLatestPost from "@/components/FetchLatestPost";
 import { ListFilterPlus } from "lucide-react";
 
 const SearchPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Final filter values used in FetchLatestPost
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState<string | null>(null);
   const [postType, setPostType] = useState<string | null>(null);
   const [distanceRange, setDistanceRange] = useState<number | null>(null);
 
-  const navigate = useNavigate();
+  // Draft values used inside the filter drawer
+  const [draftPriceRange, setDraftPriceRange] = useState<string | null>(null);
+  const [draftPostType, setDraftPostType] = useState<string | null>(null);
+  const [draftDistanceRange, setDraftDistanceRange] = useState<number | null>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const handlePostClick = (post: any) => {
     navigate(`/post-page/${post.id}`, { state: { post } });
@@ -31,13 +38,20 @@ const SearchPage = () => {
   };
 
   const handleApplyFilters = () => {
-    console.log("Filters Applied:", {
-      searchTerm,
-      priceRange,
-      postType,
-      distanceRange,
-    });
+    setPriceRange(draftPriceRange);
+    setPostType(draftPostType);
+    setDistanceRange(draftDistanceRange);
     setIsOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setPriceRange(null);
+    setPostType(null);
+    setDistanceRange(null);
+    setDraftPriceRange(null);
+    setDraftPostType(null);
+    setDraftDistanceRange(null);
   };
 
   return (
@@ -61,8 +75,8 @@ const SearchPage = () => {
               <div className="flex flex-row gap-2">
                 <div className="mb-8 flex-1">
                   <Select
-                    value={priceRange ?? undefined}
-                    onValueChange={setPriceRange}
+                    value={draftPriceRange ?? undefined}
+                    onValueChange={setDraftPriceRange}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Price range" />
@@ -77,7 +91,10 @@ const SearchPage = () => {
                 </div>
 
                 <div className="mb-8 flex-1">
-                  <Select value={postType ?? undefined} onValueChange={setPostType}>
+                  <Select
+                    value={draftPostType ?? undefined}
+                    onValueChange={setDraftPostType}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -90,8 +107,14 @@ const SearchPage = () => {
 
                 <div className="mb-8 flex-1">
                   <Select
-                    value={distanceRange ? String(distanceRange) : undefined}
-                    onValueChange={(val) => setDistanceRange(val ? Number(val) : null)}
+                    value={
+                      draftDistanceRange !== null
+                        ? String(draftDistanceRange)
+                        : undefined
+                    }
+                    onValueChange={(val) =>
+                      setDraftDistanceRange(val ? Number(val) : null)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Distance" />
@@ -106,16 +129,20 @@ const SearchPage = () => {
                 </div>
               </div>
 
-              <Button onClick={handleApplyFilters} className="w-full">
-                Apply Filters
-              </Button>
+              <div className="flex gap-2 mb-3">
+                <Button variant="outline" onClick={handleClearFilters} className="w-full">
+                  Clear Filters
+                </Button>
+              </div>
+                <Button onClick={handleApplyFilters} className="w-full">
+                  Apply Filters
+                </Button>
             </div>
           </DrawerContent>
         </Drawer>
       </div>
 
       <div className="mt-6 max-w-6xl mx-auto w-full">
-        <h2 className="text-xl text-center">Posts</h2>
         <div className="p-2">
           <FetchLatestPost
             onPostClick={handlePostClick}
