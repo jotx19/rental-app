@@ -50,17 +50,12 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
     fetchPosts();
   }, [getLatestPost]);
 
-  // 🧠 Filtering logic
   const filteredPosts = posts.filter((post) => {
-    // Text search
     const matchesSearch = post.description
       ?.toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    // Type filter
     const matchesType = postType ? post.type === postType : true;
-
-    // Price filter
     let matchesPrice = true;
     if (priceRange) {
       let min = 0;
@@ -120,11 +115,11 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
             </Badge>
           </div>
 
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
+          <h3 className="text-sm text-gray-900 dark:text-white truncate mt-1">
             {post.description}
           </h3>
 
-          <p className="text-xs font-bold border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
+          <p className="text-xs border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
             ${post.price}
           </p>
 

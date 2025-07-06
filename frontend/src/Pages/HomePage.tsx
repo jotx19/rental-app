@@ -64,7 +64,7 @@ const HomePage = () => {
           />
         </div>
       </div>
-      <div className="flex flex-row container mx-auto gap-8 justify-center text-white p-4">
+      <div className="flex flex-row container mx-auto gap-2 justify-center text-white p-4">
         <div className="gap-2">
           <Link to="/new-post">
             <Button variant='outline' className="flex bg-black items-center">
