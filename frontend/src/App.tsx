@@ -59,12 +59,10 @@ const AppContent: FC = () => {
 const App: FC = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Router>
       <div className="mt-16 lg:mt-0">
         <AppContent />
       </div>
         <Toaster position="bottom-right"/>
-      </Router>
     </ThemeProvider>
   );
 };
