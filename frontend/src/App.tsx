@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";  
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";  
 import { FC } from "react";
 import { Toaster } from "sonner";
 
