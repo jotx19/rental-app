@@ -1,7 +1,17 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 const sendMail = async (recipient, subject, otp) => {
   try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_SMTP_USER, 
+        pass: process.env.BREVO_SMTP_KEY,  
+      },
+    });
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -69,8 +79,8 @@ const sendMail = async (recipient, subject, otp) => {
 </html>
 `;
 
-    await new Resend(process.env.RESEND_API_KEY).emails.send({
-      from: "OTHousing <onboarding@resend.dev>",
+    await transporter.sendMail({
+      from: `"OTHousing" <${process.env.BREVO_SMTP_USER}>`,
       to: recipient,
       subject,
       html,
