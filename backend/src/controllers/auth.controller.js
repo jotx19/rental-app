@@ -27,7 +27,16 @@ export const signup = async (req, res) => {
         await newUser.save();
         const token = generateToken(newUser._id, res);
 
-        return res.status(200).json({ message: "User created successfully." });
+        return res.status(201).json({
+            message: "User created successfully",
+            token,
+            user: {
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                verified: newUser.verified,
+            },
+        });
 
     } catch (error) {
         console.log('Error in signup', error);
@@ -50,15 +59,17 @@ export const verifyOtp = async (req, res) => {
         user.otpExpiry = undefined;
         await user.save();
 
-        const token = generateToken(user._id, res);
-        res.json({
-            message: "OTP verified successfully",
+        const token = generateToken(newUser._id, res);
+
+        return res.status(201).json({
+            message: "User created successfully",
+            token,
             user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                verified: user.verified
-            }
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                verified: newUser.verified,
+            },
         });
 
     } catch (error) {
