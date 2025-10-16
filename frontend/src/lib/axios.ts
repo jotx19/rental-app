@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://othousing.onrender.com"
+    ? "https://othousing-ybhh.onrender.com"
     : "http://localhost:5001";
 
 export const axiosInstance = axios.create({
