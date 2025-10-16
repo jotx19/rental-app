@@ -127,7 +127,7 @@ const NewPostPage = () => {
   };
 
   return (
-    <div className="flex md:mt-12 mt-8 justify-center items-center min-h-screen p-6">
+    <div className="flex justify-center items-center min-h-screen p-6">
       <div className="w-full max-w-5xl space-y-6">
         <h2 className="text-3xl font-bold text-center mb-8">Create New Post</h2>
 
@@ -244,7 +244,7 @@ const NewPostPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className={`px-15 py-2 font-semibold text-sm rounded-md transition-all ${
+                className={`px-15 py-2 w-full font-semibold text-sm rounded-md transition-all ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#5AF2A6] hover:text-[#5AF2A6] hover:bg-[#001F10] text-black"

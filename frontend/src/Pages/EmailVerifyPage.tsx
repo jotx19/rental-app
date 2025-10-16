@@ -100,10 +100,11 @@ const EmailVerifyPage = () => {
                                 </>
                             )}
                         </Button>
+                        <p className='text-xs p-4 mx-auto flex justify-center text-gray-400'>Check Spam mail</p>
                     </>
                 ) : (
                     <div className="mt-6 flex flex-col items-center gap-4 mx-auto">
-                        <p className='flex text-center'>If you have an account, we have sent a code to your Email. Enter it below.</p>
+                        <p className='text-center'>If you have an account, we have sent a code to your Email Check <span className='underline'>Spam</span> Enter it below.</p>
                         <InputOTP maxLength={6} value={userOtp} onChange={setUserOtp} className="text-2xl justify-center">
                             <InputOTPGroup>
                                 <InputOTPSlot index={0} className="w-12 h-12" />
@@ -119,7 +120,7 @@ const EmailVerifyPage = () => {
                         </InputOTP>
 
                         <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                            Didn't get an email?{" "}
+                            Didn't get an email?{" "} 
                             {sending ? (
                                 <span className="cursor-pointer text-primary hover:opacity-85 underline">
                                     <Loader className="h-4 w-4 animate-spin" />

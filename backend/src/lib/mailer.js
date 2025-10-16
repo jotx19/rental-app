@@ -1,6 +1,8 @@
 import sgMail from "@sendgrid/mail";
+import dotenv from "dotenv";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY); 
+dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendMail = async (recipient, subject, otp) => {
   try {
@@ -8,18 +10,18 @@ const sendMail = async (recipient, subject, otp) => {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verification Code</title>
-  <style>
-    body { font-family: 'Verdana', sans-serif; background-color: #09090b; color: #ffffff; margin:0; padding:0; }
-    .container { max-width:600px; margin:0 auto; padding:20px; background-color:#09090b; border-radius:40px; box-shadow:0 4px 8px rgba(0,0,0,0.1); text-align:center; }
-    h1,p { color:#ffffff; }
-    p { font-size:16px; line-height:1.5; }
-    .otp { display:block; width:120px; margin:20px auto; background-color:#333; color:#ffffff; font-size:24px; text-align:center; line-height:50px; border-radius:10px; font-weight:bold; }
-    .cta-button { display:block; width:150px; margin:20px auto; padding:12px; background-color:#ffffff; color:#000000; text-align:center; text-decoration:none; border-radius:50px; }
-    .cta-button:hover { background-color:#c0392b; color:#ffffff; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verification Code</title>
+<style>
+  body { font-family: 'Verdana', sans-serif; background-color: #09090b; color: #ffffff; margin:0; padding:0; }
+  .container { max-width:600px; margin:0 auto; padding:20px; background-color:#09090b; border-radius:40px; box-shadow:0 4px 8px rgba(0,0,0,0.1); text-align:center; }
+  h1,p { color:#ffffff; }
+  p { font-size:16px; line-height:1.5; }
+  .otp { display:block; width:120px; margin:20px auto; background-color:#333; color:#ffffff; font-size:24px; text-align:center; line-height:50px; border-radius:10px; font-weight:bold; }
+  .cta-button { display:block; width:150px; margin:20px auto; padding:12px; background-color:#ffffff; color:#000000; text-align:center; text-decoration:none; border-radius:50px; }
+  .cta-button:hover { background-color:#c0392b; color:#ffffff; }
+</style>
 </head>
 <body>
   <div class="container">
@@ -35,15 +37,16 @@ const sendMail = async (recipient, subject, otp) => {
 
     const msg = {
       to: recipient,
-      from: "nirman20x7@gmail.com", // your verified sender
+      from: "OT-Housing<nirman20x7@gmail.com>",  // Verified sender
       subject,
       html,
+      replyTo: "nirman20x7@gmail.com"
     };
 
     await sgMail.send(msg);
-    console.log("✅ Email sent successfully to:", recipient);
+
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error(" Error sending email:", error.response?.body || error);
     throw new Error("Email sending failed");
   }
 };
