@@ -23,20 +23,21 @@ export const signup = async (req, res) => {
             password: hashedPwd,
             verified: true,
         });
+        if (newUser){
+            await newUser.save();
 
-        await newUser.save();
-        const token = generateToken(newUser._id, res);
+            const token = generateToken(newUser._id)
 
-        return res.status(201).json({
-            message: "User created successfully",
-            token,
-            user: {
-                _id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                verified: newUser.verified,
-            },
+            res.status(201).json({
+             token,
+             _id: newUser._id,
+             name: newUser.name,
+             email: newUser.email,
+             profilepic: newUser.profilePic
         });
+        } else (
+            res.status(400).json({message: "Invalid User Data"})
+        )
 
     } catch (error) {
         console.log('Error in signup', error);
@@ -59,18 +60,16 @@ export const verifyOtp = async (req, res) => {
         user.otpExpiry = undefined;
         await user.save();
 
-        const token = generateToken(user._id, res);
+        const token = generateToken(user._id)
 
-        return res.status(200).json({
-            message: "OTP verified successfully",
+        res.status(200).json({
+            message: "Login Successful",
             token,
-            user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                verified: user.verified,
-            },
-        });
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profilepic: user.profilePic
+        })
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
