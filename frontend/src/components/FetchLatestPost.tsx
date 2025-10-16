@@ -167,7 +167,9 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-primary/10" />
+              <div className="w-full h-full bg-primary/10">
+                <img src="/placeholder.jpg" alt="No Image" className="w-full h-full object-cover" />
+              </div>
             )}
 
             <Badge className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md">

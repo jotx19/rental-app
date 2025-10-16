@@ -31,7 +31,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageChange, imagePreview }
   return (
     <div className="space-y-2">
       <Label>Upload Image</Label>
-      <div className="relative w-full h-38 bg-transparent rounded-lg border border-dashed flex items-center justify-center cursor-pointer">
+      <div className="relative md:w-100 w-83 h-38 bg-transparent rounded-lg border border-dashed flex items-center justify-center cursor-pointer">
         {imagePreview ? (
           <img
             src={imagePreview}

@@ -1,29 +1,13 @@
+import { create } from "zustand";
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
-import { create } from "zustand";
-import { AxiosError } from "axios";
 
-interface authUser {
+// --- Types ---
+export interface AuthUser {
   _id: string;
   name: string;
   email: string;
-  verified: boolean;
-}
-
-interface AuthState {
-  authUser: authUser | null;
-  isSigningUp: boolean;
-  isLoggingIn: boolean;
-  isUpdatingProfile: boolean;
-  isCheckingAuth: boolean;
-  isSendingEmailVerification: boolean;
-  emailVerificationSent: boolean;
-  checkAuth: () => Promise<void>;
-  signup: (data: SignupData) => Promise<void>;
-  verify: (email: string, otp: string) => Promise<void>;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
-  sendEmailVerification: (email: string) => Promise<void>;
-  logout: () => void;
+  profilepic?: string;
 }
 
 interface SignupData {
@@ -32,6 +16,25 @@ interface SignupData {
   password: string;
 }
 
+interface AuthState {
+  authUser: AuthUser | null;
+  isSigningUp: boolean;
+  isLoggingIn: boolean;
+  isUpdatingProfile: boolean;
+  isCheckingAuth: boolean;
+  isSendingEmailVerification: boolean;
+  emailVerificationSent: boolean;
+
+  checkAuth: () => Promise<void>;
+  signup: (data: SignupData) => Promise<void>;
+  login: (data: { email: string; password: string }) => Promise<AuthUser | null>;
+  verify: (email: string, otp: string) => Promise<void>;
+  sendEmailVerification: (email: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<AuthUser>) => Promise<void>;
+}
+
+// --- Store ---
 export const useAuthStore = create<AuthState>((set) => ({
   authUser: null,
   isSigningUp: false,
@@ -41,108 +44,132 @@ export const useAuthStore = create<AuthState>((set) => ({
   isSendingEmailVerification: false,
   emailVerificationSent: false,
 
+  // --- Check Auth ---
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get<authUser>("/auth/check");
+      const res = await axiosInstance.get<AuthUser>("/auth/check");
       set({ authUser: res.data });
-    } catch (error) {
+    } catch {
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
     }
   },
 
-  signup: async (data: SignupData) => {
+  // --- Signup ---
+  signup: async (data) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post<authUser>("/auth/signup", data);
+      const res = await axiosInstance.post<{ token: string; _id: string; name: string; email: string; profilepic?: string }>("/auth/signup", data);
+
+      localStorage.setItem("jwt", res.data.token);
+      set({
+        authUser: {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          profilepic: res.data.profilepic,
+        },
+      });
+
       toast.success("Account created successfully");
-      set({ authUser: res.data });
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })
-          ?.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Network error. Please try again.");
-      }
+    } catch {
+      toast.error("Signup failed");
     } finally {
       set({ isSigningUp: false });
     }
   },
 
-  login: async (data: { email: string; password: string }) => {
+  // --- Login ---
+  login: async (data) => {
     set({ isLoggingIn: true });
     try {
-      const res = await axiosInstance.post<authUser>("/auth/login", data);
-      toast.success("Logged in successfully");
-      set({ authUser: res.data });
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })
-          ?.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Network error. Please try again.");
-      }
+      const res = await axiosInstance.post<{ message: string; token: string; _id: string; name: string; email: string; profilepic?: string }>("/auth/login", data);
+
+      localStorage.setItem("jwt", res.data.token);
+      set({
+        authUser: {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          profilepic: res.data.profilepic,
+        },
+      });
+
+      toast.success(res.data.message || "Logged in successfully");
+      return {
+        _id: res.data._id,
+        name: res.data.name,
+        email: res.data.email,
+        profilepic: res.data.profilepic,
+      };
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed");
+      return null;
     } finally {
       set({ isLoggingIn: false });
     }
   },
 
-  verify: async (email: string, otp: string) => {
+  // --- Verify OTP ---
+  verify: async (email, otp) => {
     try {
-      const res = await axiosInstance.post("/auth/verify-otp", { email, otp });
-      toast.success(res.data.message);
-      set({ authUser: res.data.user });
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })
-          ?.message;
-        toast.success(errorMessage);
-        throw new Error(errorMessage);
-      } else {
-        toast.error("Network error. Please try again.");
-        throw new Error("Network error. Please try again.");
-      }
+      const res = await axiosInstance.post<{ message: string; token: string; _id: string; name: string; email: string; profilepic?: string }>("/auth/verify-otp", { email, otp });
+
+      localStorage.setItem("jwt", res.data.token);
+      set({
+        authUser: {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          profilepic: res.data.profilepic,
+        },
+      });
+
+      toast.success(res.data.message || "Email verified successfully!");
+    } catch {
+      toast.error("Invalid OTP");
     }
   },
 
-  sendEmailVerification: async (email: string) => {
+  // --- Send Email Verification ---
+  sendEmailVerification: async (email) => {
+    set({ isSendingEmailVerification: true });
     try {
-      const res = await axiosInstance.post("/auth/email-verification", {
-        email,
-      });
+      const res = await axiosInstance.post<{ message: string }>("/auth/email-verification", { email });
       toast.success(res.data.message);
       set({ emailVerificationSent: true });
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })
-          ?.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Network error. Please try again.");
-      }
+    } catch {
+      toast.error("Failed to send verification email");
+    } finally {
+      set({ isSendingEmailVerification: false });
     }
   },
 
+  // --- Logout ---
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
+      localStorage.removeItem("jwt");
       set({ authUser: null });
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        const errorMessage = (axiosError.response?.data as { message: string })
-          ?.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Network error. Please try again.");
-      }
+      toast.success("Logged out successfully");
+    } catch {
+      toast.error("Logout failed");
+    }
+  },
+
+  // --- Update Profile ---
+  updateProfile: async (data) => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put<AuthUser>("/auth/update-profile", data);
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
+    } catch {
+      toast.error("Failed to update profile");
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 }));

@@ -52,23 +52,23 @@ export const verifyOtp = async (req, res) => {
             return res.status(400).json({ message: "User not found" });
 
         if (user.otp !== otp || new Date() > user.otpExpiry)
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.status(400).json({ message: "Invalid or expired OTP" });
 
         user.verified = true;
         user.otp = undefined;
         user.otpExpiry = undefined;
         await user.save();
 
-        const token = generateToken(newUser._id, res);
+        const token = generateToken(user._id, res);
 
-        return res.status(201).json({
-            message: "User created successfully",
+        return res.status(200).json({
+            message: "OTP verified successfully",
             token,
             user: {
-                _id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                verified: newUser.verified,
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                verified: user.verified,
             },
         });
 
@@ -76,6 +76,7 @@ export const verifyOtp = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error });
     }
 };
+
 
 export const resendOtp = async (req, res) => {
     const { email } = req.body;
@@ -124,30 +125,39 @@ export const emailVerification = async (req, res) => {
     }
 };
 
-export const login = async (req, res) => {
-    const { email, password } = req.body;
+export const login = async (req, res)=>{
+    const {email, password}=req.body;
     try {
-        const user = await User.findOne({ email });
-        if (!user)
-            return res.status(400).json({ message: "User not found" });
+        const user = await User.findOne({email})
 
-        if (!user.verified)
-            return res.status(400).json({ message: "Email not verified" });
+        if(!user){
+            return res.status(400).json({message: "Wrong credentials"});
+        }
+            
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch)
-            return res.status(400).json({ message: "Invalid credentials" });
+        if(!isPasswordCorrect){
+            return res.status(400).json({message: "Wrong credentials"});
+        }
 
-        const token = generateToken(user._id, res);
-        res.json({ message: "Login successful" });
+        const token = generateToken(user._id)
 
+        res.status(200).json({
+            message: "Login Successful",
+            token,
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profilepic: user.profilePic
+        })
     } catch (error) {
-        res.status(500).json({ message: "Internal server error", error });
+        console.log("Unable to login")
+        res.status(500).json({message: "Internal Server Error"});
+        
     }
 };
-
 export const logout = (req, res) => {
-    res.clearCookie("myToken", {
+    res.clearCookie("jwt", {
         maxAge: 0,
         httpOnly: true,
         sameSite: 'None',

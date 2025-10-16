@@ -125,8 +125,9 @@ const FetchPage: React.FC<FetchPageProps> = ({ onPostClick }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-primary/10" />
-            )}
+              <div className="w-full h-full bg-primary/10">
+                <img src="/placeholder.jpg" alt="No Image" className="w-full h-full object-cover" />
+              </div>            )}
           </div>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
             {post.description}
