@@ -130,7 +130,8 @@ const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
     }
 
     return matchesSearch && matchesType && matchesPrice && matchesDistance;
-  });
+  })
+  .slice(0, 8);
 
   if (loading) {
     return (

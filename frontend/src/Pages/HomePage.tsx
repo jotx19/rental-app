@@ -49,17 +49,16 @@ const HomePage = () => {
   };
 
   return (
-    <div className="relative p-3 top-10 mt-12 flex flex-col">
+    <div className="relative p-3 md:top-20 top-20 mt-12 flex flex-col">
       <div className="">
         <div className="flex flex-col gap-1 items-center justify-center text-center">
           <div className="border-primary/70 border-[1px] rounded-full px-1 flex items-center gap-2">
             <StarsIcon size={15} className="text-amber-500 inline" />
             Swipe down for more
           </div>
-          {/* <ArrowDown className="text-primary animate-bounce" /> */}
           <h1 className="md:text-7xl text-5xl hidden md:block">Navigation to accommodation</h1>
           <img
-            src="/Post.png"
+            src="/hero_img2.png"
             alt="Accommodation Navigation"
             className="mt-4 w-full max-w-3xl rounded-lg shadow-md"
           />
@@ -82,7 +81,7 @@ const HomePage = () => {
       </div>
       
 
-      <div className="flex gap-5 flex-col md:py-3 py-3">
+      <div className="flex gap-5 md:mt-30 flex-col md:py-3 py-3">
         <h1 className="md:text-3xl  justify-center text-center text-muted-foreground font-mono p-2 uppercase">Recently Uploaded Post</h1>
         <div className="min-h-[20vh] md:min-h-[40vh] rounded-xl">
           {isCreatingPost ? (
@@ -101,7 +100,7 @@ const HomePage = () => {
           </p>
         </div>
 
-        <div className="p-2 mt-6 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
+        <div className="p-2 mt-10 min-h-[40vh] border-dashed border-[1px] rounded-xl relative">
           <div className="flex md:justify-between md:flex-row flex-col">
             <h1 className="text-3xl p-2 underline">Nearby Posts</h1>
 
