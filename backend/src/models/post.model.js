@@ -56,5 +56,7 @@ const postSchema = new mongoose.Schema(
 
 postSchema.index({ location: "2dsphere" });
 
+postSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+
 const Post = mongoose.model("Post", postSchema);
 export default Post;
