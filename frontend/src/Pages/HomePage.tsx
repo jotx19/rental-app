@@ -41,7 +41,7 @@ const HomePage = () => {
   };
 
   const handlePostClick = (post: any) => {
-    navigate(`/post-page/${post.id}`, { state: { post } });
+    navigate(`/post-page/${post._id}`, { state: { post } });
   };
   
   const handleGetStartedClick = () => {

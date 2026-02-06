@@ -1,8 +1,17 @@
-import sgMail from "@sendgrid/mail";
+// src/lib/mailer.js
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// Transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const sendMail = async (recipient, subject, otp) => {
   try {
@@ -35,18 +44,19 @@ const sendMail = async (recipient, subject, otp) => {
 </html>
 `;
 
-    const msg = {
+    const mailOptions = {
+      from: `"OT-Housing" <${process.env.EMAIL_USER}>`,
       to: recipient,
-      from: "OT-Housing<nirman20x7@gmail.com>",  // Verified sender
       subject,
       html,
-      replyTo: "nirman20x7@gmail.com"
+      replyTo: process.env.EMAIL_USER,
     };
 
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
 
+    console.log("Email sent successfully");
   } catch (error) {
-    console.error(" Error sending email:", error.response?.body || error);
+    console.error("Error sending email:", error);
     throw new Error("Email sending failed");
   }
 };

@@ -165,6 +165,26 @@ export const logout = (req, res) => {
     res.json({ message: "Logged out successfully" });
 };
 
+export const loginWithGoogle = (req, res )=>{
+    try {
+        const user = req.user;
+
+        const token = generateToken(user._id)
+
+        res.status(200).json({
+            message: "Login Successful",
+            token,
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profilepic: user.profilePic
+        })
+    } catch (error) {
+        console.log("Unable to login with Google", error)
+        res.status(500).json({message: "Internal Server Error"});
+        
+    }
+}
 
 export const checkAuth = (req, res) => {
     try {
