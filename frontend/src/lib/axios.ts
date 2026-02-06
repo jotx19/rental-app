@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const BASE_URL =
-     "http://localhost:5001";
+     "https://othousing-8g8o.onrender.com";
 
 export const axiosInstance = axios.create({
   baseURL: `${BASE_URL}/api`,
