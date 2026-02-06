@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,15 @@ interface FetchLatestPostProps {
   priceRange?: string | null;
   postType?: string | null;
   distanceRange?: number | null;
+  initialLimit?: number;
+  loadMoreStep?: number;
+  onPageChange?: (page: number, hasMore: boolean) => void;
+}
+
+// Expose methods via ref
+export interface FetchLatestPostRef {
+  loadMore: () => void;
+  loadPage: (page: number) => void;
 }
 
 const getDaysAgo = (dateString: string) => {
@@ -31,202 +40,169 @@ const calculateDistance = (
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+      Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
-const FetchLatestPost: React.FC<FetchLatestPostProps> = ({
-  onPostClick,
-  searchTerm = "",
-  priceRange = null,
-  postType = null,
-  distanceRange = null,
-}) => {
-  const { getLatestPost } = usePostStore();
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+const FetchLatestPost = forwardRef<FetchLatestPostRef, FetchLatestPostProps>(
+  (
+    {
+      onPostClick,
+      searchTerm = "",
+      priceRange = null,
+      postType = null,
+      distanceRange = null,
+      initialLimit = 8,
+      loadMoreStep = 10,
+      onPageChange,
+    },
+    ref
+  ) => {
+    const { getLatestPost } = usePostStore();
+    const [posts, setPosts] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [hasMore, setHasMore] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchPosts = async (fetchPage: number, reset = false) => {
       setLoading(true);
       try {
-        const fetchedPosts = await getLatestPost();
-        if (Array.isArray(fetchedPosts)) {
-          setPosts(fetchedPosts);
-        } else {
-          setPosts([]);
+        let minPrice: number | undefined;
+        let maxPrice: number | undefined;
+
+        if (priceRange) {
+          if (priceRange.includes("+")) minPrice = parseInt(priceRange);
+          else {
+            const [minStr, maxStr] = priceRange.split("-");
+            minPrice = parseInt(minStr);
+            maxPrice = parseInt(maxStr);
+          }
         }
+
+        const res = await getLatestPost({
+          page: fetchPage,
+          limit: reset ? initialLimit : loadMoreStep,
+          search: searchTerm,
+          type: postType || "",
+          minPrice,
+          maxPrice,
+        });
+
+        const fetchedPosts = res?.posts || [];
+
+        setPosts((prev) => (reset ? fetchedPosts : [...prev, ...fetchedPosts]));
+
+        const more = fetchedPosts.length >= (reset ? initialLimit : loadMoreStep);
+        setHasMore(more);
+        if (onPageChange) onPageChange(fetchPage, more);
       } catch (error) {
-        toast.error("Error fetching latest posts.");
-        setPosts([]);
+        toast.error("Error fetching posts.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
-  }, [getLatestPost]);
+    useEffect(() => {
+      setPage(1);
+      fetchPosts(1, true);
+    }, [getLatestPost, searchTerm, priceRange, postType]);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Error getting geolocation:", error);
-        }
-      );
-    }
-  }, []);
-
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.description
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    const matchesType = postType ? post.type === postType : true;
-
-    let matchesPrice = true;
-    if (priceRange) {
-      let min = 0,
-        max = Infinity;
-
-      if (priceRange.includes("+")) {
-        min = parseInt(priceRange);
-      } else {
-        const [minStr, maxStr] = priceRange.split("-");
-        min = parseInt(minStr);
-        max = parseInt(maxStr);
+    useEffect(() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+          (err) => console.error("Geolocation error:", err)
+        );
       }
+    }, []);
+    useImperativeHandle(ref, () => ({
+      loadMore: () => {
+        if (!hasMore || loading) return;
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchPosts(nextPage, false);
+      },
+      loadPage: (pageNumber: number) => {
+        setPage(pageNumber);
+        fetchPosts(pageNumber, true);
+      },
+    }));
 
-      matchesPrice = post.price >= min && post.price <= max;
-    }
+    const filteredPosts = posts.filter((post) => {
+      if (!distanceRange || !userLocation || !post.location?.coordinates) return true;
+      const [lng, lat] = post.location.coordinates;
+      const distance = calculateDistance(userLocation.lat, userLocation.lon, lat, lng);
+      return distance <= distanceRange;
+    });
 
-    let matchesDistance = true;
-    if (
-      distanceRange &&
-      userLocation &&
-      post.location?.coordinates &&
-      post.location.coordinates.length === 2
-    ) {
-      const [postLng, postLat] = post.location.coordinates;
-      const distance = calculateDistance(
-        userLocation.lat,
-        userLocation.lon,
-        postLat,
-        postLng
-      );
-      matchesDistance = distance <= distanceRange;
-    }
-
-    return matchesSearch && matchesType && matchesPrice && matchesDistance;
-  })
-  .slice(0, 8);
-
-  if (loading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {Array(8)
-          .fill(null)
-          .map((_, index) => (
-            <div
-              key={index}
-              className="p-2 border rounded-md"
-            >
-              <Skeleton className="w-full aspect-[16/9] mb-2 rounded-md" />
-              <Skeleton className="w-3/4 h-4 mb-1" />
-              <Skeleton className="w-1/2 h-3" />
-            </div>
-          ))}
+        {loading && posts.length === 0
+          ? Array(initialLimit)
+              .fill(null)
+              .map((_, index) => (
+                <div key={index} className="p-2 border rounded-md">
+                  <Skeleton className="w-full aspect-[16/9] mb-2 rounded-md" />
+                  <Skeleton className="w-3/4 h-4 mb-1" />
+                  <Skeleton className="w-1/2 h-3" />
+                </div>
+              ))
+          : filteredPosts.map((post) => (
+              <div
+                key={post._id}
+                className="p-2 border transform transition-transform duration-300 hover:scale-105 rounded-md flex flex-col justify-between relative cursor-pointer"
+                onClick={() => onPostClick(post)}
+              >
+                <div className="w-full aspect-[16/9] overflow-hidden rounded-md relative">
+                  {post.image ? (
+                    <img src={post.image} alt={post.description} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-primary/10">
+                      <img src="/placeholder.jpg" alt="No Image" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <Badge className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md">
+                    {getDaysAgo(post.createdAt)}
+                  </Badge>
+                </div>
+
+                <h3 className="text-sm text-gray-900 dark:text-white truncate mt-1">{post.description}</h3>
+                <p className="text-xs border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">${post.price}</p>
+
+                {distanceRange && userLocation && post.location?.coordinates && (
+                  <Badge className="text-xs mt-1">
+                    {(() => {
+                      const [lng, lat] = post.location.coordinates;
+                      const d = calculateDistance(userLocation.lat, userLocation.lon, lat, lng);
+                      return `${d.toFixed(2)} km away`;
+                    })()}
+                  </Badge>
+                )}
+
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {post.utilities?.slice(0, 1).map((u: string, i: number) => (
+                    <Badge key={i} variant="secondary" className="px-2 py-0.5 text-[10px] rounded-md">
+                      {u}
+                    </Badge>
+                  ))}
+                  <div className="hidden sm:flex flex-wrap gap-1 mt-1">
+                    {post.utilities?.slice(1).map((u: string, i: number) => (
+                      <Badge key={i} variant="secondary" className="px-2 py-0.5 text-[10px] rounded-md">
+                        {u}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
       </div>
     );
   }
-
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-      {filteredPosts.map((post) => (
-        <div
-          key={post._id}
-          className="p-2 border transform transition-transform duration-300 hover:scale-105 rounded-md flex flex-col justify-between relative cursor-pointer"
-          onClick={() => onPostClick(post)}
-        >
-          <div className="w-full aspect-[16/9] overflow-hidden rounded-md relative">
-            {post.image ? (
-              <img
-                src={post.image}
-                alt={post.description}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-primary/10">
-                <img src="/placeholder.jpg" alt="No Image" className="w-full h-full object-cover" />
-              </div>
-            )}
-
-            <Badge className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md">
-              {getDaysAgo(post.createdAt)}
-            </Badge>
-          </div>
-
-          <h3 className="text-sm text-gray-900 dark:text-white truncate mt-1">
-            {post.description}
-          </h3>
-
-          <p className="text-xs border text-[#47A8FF] px-2 py-1 rounded-md w-fit mt-1">
-            ${post.price}
-          </p>
-
-          {distanceRange && userLocation && post.location?.coordinates && (
-            <Badge className="text-xs mt-1">
-              {(() => {
-                const [lng, lat] = post.location.coordinates;
-                const d = calculateDistance(
-                  userLocation.lat,
-                  userLocation.lon,
-                  lat,
-                  lng
-                );
-                return `${d.toFixed(2)} km away`;
-              })()}
-            </Badge>
-          )}
-
-          <div className="flex flex-wrap gap-1 mt-1">
-            {post.utilities.slice(0, 1).map((utility: string, index: number) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="px-2 py-0.5 text-[10px] rounded-md"
-              >
-                {utility}
-              </Badge>
-            ))}
-            <div className="hidden sm:flex flex-wrap gap-1 mt-1">
-              {post.utilities.slice(1).map((utility: string, index: number) => (
-                <Badge
-                  key={index}
-                  variant="secondary"
-                  className="px-2 py-0.5 text-[10px] rounded-md"
-                >
-                  {utility}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+);
 
 export default FetchLatestPost;

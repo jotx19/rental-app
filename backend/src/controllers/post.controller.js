@@ -157,15 +157,46 @@ export const getNearbyPosts = async (req, res) => {
 };
 
 export const getRecentPostsWithImages = async (req, res) => {
-        try {
-            const posts = await Post.find() 
-                .sort({ createdAt: -1 }) 
-                .limit(10)
-                .populate("user", "name email profilePic");
-    
-            return res.status(200).json({ posts });
-        } catch (error) {
-            console.log("Error fetching recent posts with images: ", error);
-            return res.status(500).json({ message: "Error fetching posts", error });
+    try {
+        const limit = parseInt(req.query.limit) || 8; 
+        const page = parseInt(req.query.page) || 1;
+        const search = req.query.search || "";
+        const type = req.query.type || null;
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : null;
+        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : null;
+
+        const query = {};
+
+        if (search) query.description = { $regex: search, $options: "i" };
+        if (type) query.type = type;
+        if (minPrice !== null || maxPrice !== null) {
+            query.price = {};
+            if (minPrice !== null) query.price.$gte = minPrice;
+            if (maxPrice !== null) query.price.$lte = maxPrice;
         }
-    };
+
+        const skip = (page - 1) * limit;
+
+        const posts = await Post.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate("user", "name email profilePic");
+
+        const totalPosts = await Post.countDocuments(query);
+        const hasMore = skip + posts.length < totalPosts;
+
+        return res.status(200).json({
+            posts,
+            pagination: {
+                page,
+                limit,
+                totalPosts,
+                hasMore,
+            },
+        });
+    } catch (error) {
+        console.log("Error fetching recent posts with images: ", error);
+        return res.status(500).json({ message: "Error fetching posts", error });
+    }
+};

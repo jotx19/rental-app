@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,24 +10,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import FetchLatestPost from "@/components/FetchLatestPost";
+import FetchLatestPost, { FetchLatestPostRef } from "@/components/FetchLatestPost";
 import { ListFilterPlus } from "lucide-react";
 
 const SearchPage = () => {
   const navigate = useNavigate();
 
-  // Final filter values used in FetchLatestPost
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState<string | null>(null);
   const [postType, setPostType] = useState<string | null>(null);
   const [distanceRange, setDistanceRange] = useState<number | null>(null);
 
-  // Draft values used inside the filter drawer
   const [draftPriceRange, setDraftPriceRange] = useState<string | null>(null);
   const [draftPostType, setDraftPostType] = useState<string | null>(null);
   const [draftDistanceRange, setDraftDistanceRange] = useState<number | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const fetchRef = useRef<FetchLatestPostRef>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const handlePostClick = (post: any) => {
     navigate(`/post-page/${post.id}`, { state: { post } });
@@ -54,6 +58,10 @@ const SearchPage = () => {
     setDraftDistanceRange(null);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen mt-20 px-4 sm:px-6 md:px-8">
       <div className="max-w-6xl mx-auto w-full flex gap-2">
@@ -71,13 +79,9 @@ const SearchPage = () => {
           <DrawerContent className="p-4 flex justify-center items-center">
             <div className="w-full flex flex-col max-w-3xl">
               <h2 className="text-lg mx-auto border rounded-md px-1 m-3">Filters</h2>
-
               <div className="flex flex-row gap-2">
                 <div className="mb-8 flex-1">
-                  <Select
-                    value={draftPriceRange ?? undefined}
-                    onValueChange={setDraftPriceRange}
-                  >
+                  <Select value={draftPriceRange ?? undefined} onValueChange={setDraftPriceRange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Price range" />
                     </SelectTrigger>
@@ -89,12 +93,8 @@ const SearchPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="mb-8 flex-1">
-                  <Select
-                    value={draftPostType ?? undefined}
-                    onValueChange={setDraftPostType}
-                  >
+                  <Select value={draftPostType ?? undefined} onValueChange={setDraftPostType}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -104,17 +104,10 @@ const SearchPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="mb-8 flex-1">
                   <Select
-                    value={
-                      draftDistanceRange !== null
-                        ? String(draftDistanceRange)
-                        : undefined
-                    }
-                    onValueChange={(val) =>
-                      setDraftDistanceRange(val ? Number(val) : null)
-                    }
+                    value={draftDistanceRange !== null ? String(draftDistanceRange) : undefined}
+                    onValueChange={(val) => setDraftDistanceRange(val ? Number(val) : null)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Distance" />
@@ -134,23 +127,47 @@ const SearchPage = () => {
                   Clear Filters
                 </Button>
               </div>
-                <Button onClick={handleApplyFilters} className="w-full">
-                  Apply Filters
-                </Button>
+              <Button onClick={handleApplyFilters} className="w-full">
+                Apply Filters
+              </Button>
             </div>
           </DrawerContent>
         </Drawer>
       </div>
 
+      {/* Posts */}
       <div className="mt-6 max-w-6xl mx-auto w-full">
         <div className="p-2">
           <FetchLatestPost
+            ref={fetchRef}
+            initialLimit={8}
             onPostClick={handlePostClick}
             searchTerm={searchTerm}
             priceRange={priceRange}
             postType={postType}
             distanceRange={distanceRange}
+            onPageChange={(page, more) => {
+              setCurrentPage(page);
+              setHasMore(more);
+            }}
           />
+
+          <div className="mt-4 flex justify-center gap-2">
+            <Button
+              variant="outline"
+              disabled={currentPage <= 1}
+              onClick={() => fetchRef.current?.loadPage(currentPage - 1)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              disabled={!hasMore}
+              onClick={() => fetchRef.current?.loadPage(currentPage + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>

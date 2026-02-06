@@ -15,6 +15,15 @@ interface PostData {
     longitude: number | null;
 }
 
+interface GetLatestPostOptions {
+    page?: number;
+    limit?: number;
+    search?: string;
+    type?: string;
+    minPrice?: number;
+    maxPrice?: number;
+  }
+
 interface PostState {
     isCurrentLocation: boolean;
     isCreatingPost: boolean;
@@ -29,7 +38,7 @@ interface PostState {
     createPost: (data: PostData) => Promise<any>;
     getCurrentLocation: () => void;
     getNearbyPosts: () => void;
-    getLatestPost:() => void;
+    getLatestPost: (options?: GetLatestPostOptions) => Promise<{ posts: any[], total?: number } | undefined>;
     getAllPosts: (userId: string) => void;
     searchLocation: (query: string) => void;
     setLocation: (lat: number, lon: number, name: string) => void;
@@ -158,23 +167,28 @@ export const usePostStore = create<PostState>((set, get) => ({
         });
         get().getNearbyPosts();
     },
-
-    getLatestPost: async () => {
+    
+    getLatestPost: async (options?: GetLatestPostOptions) => {
+        const { page = 1, limit = 8, search = "", type = "", minPrice, maxPrice } = options || {};
+      
         try {
-            const res = await axiosInstance.get("/post/latest-post");
-            if (res.data.posts) {
-            }
-            return res.data.posts;
+          const res = await axiosInstance.get("/post/latest-post", {
+            params: { page, limit, search, type, minPrice, maxPrice },
+          });
+      
+          if (res.data.posts) {
+            // Save posts in Zustand state
+            set({ userPosts: res.data.posts });
+            return res.data; // { posts: [], total: ... }
+          }
+          return undefined;
         } catch (error: AxiosError | any) {
-            if (error.response) {
-                toast.error(error.response.data.message);
-            } else if (error.request) {
-                toast.error("Network error. Please try again later.");
-            } else {
-                toast.error("An error occurred. Please try again later.");
-            }
+          if (error.response) toast.error(error.response.data.message);
+          else if (error.request) toast.error("Network error. Please try again later.");
+          else toast.error("An error occurred. Please try again later.");
         }
-    },
+      },
+      
 
     getAllPosts: async (authUser: any) => {
         set({ isFetchingPosts: true });

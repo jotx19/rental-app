@@ -64,7 +64,7 @@ const HomePage = () => {
           />
         </div>
       </div>
-      <div className="flex flex-row container mx-auto gap-2 justify-center text-white p-4">
+      <div className="flex flex-row container mx-auto gap-2 justify-center mt-10 text-white p-4">
         <div className="gap-2">
           <Link to="/new-post">
             <Button variant='outline' className="flex bg-black items-center">
@@ -73,7 +73,7 @@ const HomePage = () => {
           </Link>
         </div>
         <div>
-          <Button className="text-primary" variant='outline' onClick={handleGetStartedClick}>
+          <Button className="text-primary" variant="secondary" onClick={handleGetStartedClick}>
             Explore
           <Search size={20} />
           </Button>
@@ -81,7 +81,7 @@ const HomePage = () => {
       </div>
       
 
-      <div className="flex gap-5 md:mt-30 flex-col md:py-3 py-3">
+      <div className="flex gap-5 flex-col md:py-3 py-3">
         <h1 className="md:text-3xl  justify-center text-center text-muted-foreground font-mono p-2 uppercase">Recently Uploaded Post</h1>
         <div className="min-h-[20vh] md:min-h-[40vh] rounded-xl">
           {isCreatingPost ? (

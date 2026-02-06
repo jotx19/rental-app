@@ -126,10 +126,14 @@ const NewPostPage = () => {
     }));
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="flex justify-center items-center min-h-screen p-6">
       <div className="w-full max-w-5xl space-y-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Create New Post</h2>
+        <h2 className="text-3xl text-center mb-8">Create New Post</h2>
 
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 grid-cols-1 gap-8 items-start">
           <div className="flex flex-col items-center justify-start space-y-4">
@@ -230,7 +234,7 @@ const NewPostPage = () => {
                     onClick={() => handleUtilityToggle(utility)}
                     className={`py-2 px-4 border transition-all ${
                       formData.utilities.includes(utility)
-                        ? "bg-white text-black font-semibold"
+                        ? "bg-white text-black"
                         : "bg-black text-white hover:text-black"
                     }`}
                   >
@@ -244,7 +248,7 @@ const NewPostPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className={`px-15 py-2 w-full font-semibold text-sm rounded-md transition-all ${
+                className={`px-15 py-2 w-full text-sm rounded-md transition-all ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#5AF2A6] hover:text-[#5AF2A6] hover:bg-[#001F10] text-black"

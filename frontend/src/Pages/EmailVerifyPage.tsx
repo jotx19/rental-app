@@ -100,7 +100,6 @@ const EmailVerifyPage = () => {
                                 </>
                             )}
                         </Button>
-                        <p className='text-xs p-4 mx-auto flex justify-center text-gray-400'>Check Spam mail</p>
                     </>
                 ) : (
                     <div className="mt-6 flex flex-col items-center gap-4 mx-auto">
