@@ -102,12 +102,15 @@ export const resendOtp = async (req, res) => {
 export const emailVerification = async (req, res) => {
     const { email } = req.body;
 
+    if (!email || typeof email !== "string") {
+        return res.status(400).json({ message: "Email is required" });
+    }
+
     try {
         const user = await User.findOne({ email });
         if (!user)
             return res.status(400).json({ message: "User with this email does not exist" });
 
-        // Generate OTP and send to user if the email exists
         const otp = generateOTP();
         const otpExpiry = new Date(Date.now() + 20 * 60 * 1000);
 
@@ -115,7 +118,7 @@ export const emailVerification = async (req, res) => {
         user.otpExpiry = otpExpiry;
         await user.save();
 
-        await sendMail(email, 'Your OTP Code for Email Verification', otp);
+        await sendMail({ recipient: email, subject: 'Your OTP Code for Email Verification', otp });
         res.json({ message: 'OTP sent successfully.' });
 
     } catch (error) {
