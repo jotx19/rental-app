@@ -18,15 +18,18 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkServerStatus = async () => {
-      const posts = await getLatestPost();
-      if (Array.isArray(posts) && posts.length > 0) {
-        setIsServerOnline(true);
-      } else {
-        setIsServerOnline(false); 
+      try {
+        const res = await getLatestPost({ page: 1, limit: 1 });
+        const posts = res?.posts || [];
+        setIsServerOnline(posts.length > 0);
+      } catch (error) {
+        setIsServerOnline(false);
+        console.error("Server check failed:", error);
       }
     };
     checkServerStatus();
   }, [getLatestPost]);
+  
 
   return (
     <header className="font-custom text-white border-b-[1px] fixed top-0 left-1/2 transform -translate-x-1/2 w-full z-20 backdrop-blur-lg bg-base-100/80">
